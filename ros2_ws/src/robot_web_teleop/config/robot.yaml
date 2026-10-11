@@ -1,0 +1,19 @@
+# These three dictionaries are loaded by robot.launch.py (not --params-file).
+camera:
+  width: 640
+  height: 480
+  fps: 15.0
+  jpeg_quality: 70
+motor:
+  baud: 115200
+  usb_reset_wait_s: 2.0
+  wheel_track_m: 0.18
+  max_wheel_speed_mps: 0.40
+  pwm_limit: 140
+  command_timeout_s: 0.25
+  stamp_max_age_s: 0.25
+web:
+  bind_host: '0.0.0.0'
+  port: 8080
+  max_linear_mps: 0.25
+  max_angular_rps: 1.8
