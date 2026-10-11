@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Камера робота · просмотр</title>
+<style>
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{margin:0;background:#111827;color:#edf2f7;font:16px/1.5 system-ui,sans-serif}
+main{max-width:900px;margin:auto;padding:24px 16px}h1{font-size:26px;margin:0 0 8px}
+p{margin:8px 0 18px}.muted{color:#b8c4d6}form{max-width:380px}
+label{display:block;margin-bottom:8px}input,button{font:inherit;border-radius:10px;padding:12px}
+input{width:100%;border:1px solid #718096;background:#192334;color:white}
+button{border:0;background:#8ddcf0;color:#10212c;cursor:pointer;margin-top:12px}
+button:disabled{opacity:.55;cursor:default}#logout{background:#263449;color:#edf2f7}
+.video{position:relative;background:#030712;aspect-ratio:4/3;border-radius:12px;overflow:hidden}
+img{display:block;width:100%;height:100%;object-fit:contain}
+#cover{position:absolute;inset:0;display:grid;place-items:center;background:#030712d9;text-align:center;padding:20px}
+#status{font-variant-numeric:tabular-nums}.error{color:#ffc9b0}
+</style>
+</head>
+<body><main>
+<h1>Камера робота</h1>
+<p class="muted">Режим просмотра. Управление моторами отключено в этом сервере.</p>
+<section id="login">
+<form id="loginForm"><label for="password">Пароль, заданный при запуске на Raspberry Pi</label>
+<input id="password" type="password" autocomplete="current-password" minlength="8" required>
+<button id="loginButton" type="submit">Открыть камеру</button></form>
+<p id="loginError" class="error" role="status"></p>
+</section>
+<section id="viewer" hidden>
+<div class="video"><img id="camera" width="640" height="480" alt="Изображение с камеры робота">
+<div id="cover">Ожидание первого кадра…</div></div>
+<p id="status" role="status">Камера запускается…</p>
+<p class="muted">Возраст ниже отсчитывается с получения нового кадра страницей. Это не измерение задержки съёмки. При низкой частоте изображение обновляется редко.</p>
+<button id="logout" type="button">Выйти</button>
+</section>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+let logged = false, generation = 0, frameToken = '', frameAt = 0, imageURL = '', pending = null;
+async function request(path, options = {}) {
+  const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 3000);
+  try { return await fetch(path, {credentials:'same-origin', cache:'no-store', ...options, signal:controller.signal}); }
+  finally { clearTimeout(timer); }
+}
+function clearFrame() {
+  frameToken = ''; frameAt = 0; $('camera').removeAttribute('src');
+  if (imageURL) URL.revokeObjectURL(imageURL); imageURL = '';
+  $('cover').hidden = false;
+}
+function start() {
+  generation++; logged = true; clearFrame();
+  $('login').hidden = true; $('viewer').hidden = false; $('password').value = '';
+  $('cover').textContent = 'Ожидание первого кадра…'; $('status').textContent = 'Камера запускается…';
+}
+function end(reason) {
+  generation++; logged = false; pending?.abort(); clearFrame();
+  $('login').hidden = false; $('viewer').hidden = true; $('loginError').textContent = reason;
+}
+$('loginForm').onsubmit = async event => {
+  event.preventDefault(); if ($('loginButton').disabled) return;
+  $('loginButton').disabled = true; $('loginError').textContent = '';
+  try {
+    const response = await request('/api/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:$('password').value})});
+    if (!response.ok) throw new Error(response.status === 401 ? 'Неверный пароль.' : 'Не удалось войти. Проверьте сервер.');
+    start();
+  } catch (error) { $('loginError').textContent = error.message; }
+  finally { $('loginButton').disabled = false; }
+};
+$('logout').onclick = async () => {
+  end('Вы вышли.'); $('loginButton').disabled = true;
+  try {
+    const response = await request('/api/logout', {method:'POST'});
+    if (!response.ok && response.status !== 401) throw new Error('Выход не подтверждён');
+  } catch (_) { $('loginError').textContent = 'Связь закрыта; сервер не подтвердил выход.'; }
+  finally { $('loginButton').disabled = false; }
+};
+document.addEventListener('visibilitychange', () => { if (document.hidden) pending?.abort(); });
+window.addEventListener('pagehide', () => pending?.abort());
+setInterval(() => {
+  if (!logged || !frameToken) return;
+  const age = (performance.now() - frameAt) / 1000;
+  $('status').textContent = `Новый кадр получен страницей ${age.toFixed(1)} с назад`;
+  if (age > 5) { $('cover').textContent = 'Новых кадров нет'; $('cover').hidden = false; }
+}, 100);
+async function videoLoop() {
+  for (;;) {
+    if (!logged || document.hidden) { await delay(150); continue; }
+    const current = generation, controller = new AbortController(); pending = controller;
+    const timer = setTimeout(() => controller.abort(), 3000); let url = '';
+    try {
+      const response = await fetch('/api/frame.jpg', {credentials:'same-origin', cache:'no-store', signal:controller.signal});
+      if (response.status === 401) { if (current === generation) end('Войдите снова.'); continue; }
+      if (!response.ok) throw new Error('Нет кадра');
+      const token = response.headers.get('X-Frame-Token'), bytes = await response.blob();
+      if (!token) throw new Error('Нет метки кадра');
+      if (token === frameToken) continue; // Repeated HTTP responses are not new camera frames.
+      url = URL.createObjectURL(bytes);
+      const decoded = new Image(); decoded.src = url; await decoded.decode();
+      if (!logged || current !== generation || document.hidden) continue;
+      const previous = imageURL; imageURL = url; url = '';
+      $('camera').src = imageURL; frameToken = token; frameAt = performance.now();
+      $('cover').hidden = false;
+      await $('camera').decode();
+      if (logged && current === generation && !document.hidden) $('cover').hidden = true;
+      if (previous) URL.revokeObjectURL(previous);
+    } catch (_) {
+      if (logged && current === generation && !document.hidden) {
+        $('cover').textContent = 'Ожидание кадра…'; $('cover').hidden = false;
+        if (!frameToken) $('status').textContent = 'Камера ещё не передала кадр. Проверьте журнал на Pi.';
+      }
+    } finally { clearTimeout(timer); if (url) URL.revokeObjectURL(url); pending = null; await delay(100); }
+  }
+}
+videoLoop();
+</script>
+</main></body></html>

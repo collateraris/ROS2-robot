@@ -5,7 +5,6 @@
   <description>Phone teleoperation of a Raspberry Pi / Arduino wheeled robot.</description>
   <maintainer email="robot@example.invalid">Robot owner</maintainer>
   <license>MIT</license>
-  <buildtool_depend>ament_python</buildtool_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>

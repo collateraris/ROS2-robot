@@ -11,10 +11,11 @@ from .control import Control
 
 
 class RobotServer:
-    def __init__(self, io, page, password):
+    def __init__(self, io, page, password, *, view_only=False):
         if len(password) < 8:
             raise ValueError('Set ROBOT_PASSWORD to at least 8 characters')
         self.io, self.page = io, Path(page)
+        self.view_only = bool(view_only)
         self.password = password.encode('utf-8')
         self.control = Control()
         self.sessions, self.clients, self.attempts = {}, {}, {}
@@ -84,6 +85,7 @@ class RobotServer:
     def state(self, client=None):
         health = self.io.health()
         return dict(type='state', authenticated=True, armed=self.control.armed,
+                    view_only=self.view_only,
                     owner=self.control.owner == client and client is not None,
                     reason=self.control.reason, **health)
 
@@ -100,6 +102,8 @@ class RobotServer:
             'Cache-Control': 'no-store', 'X-Frame-Token': token})
 
     def fault(self, frame_token=None, check_frame=False):
+        if self.view_only:
+            return 'Режим просмотра: управление отключено'
         health = self.io.health()
         if not health['drive_ready']:
             return 'Arduino не готова'

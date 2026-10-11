@@ -121,6 +121,26 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.gateway.control.armed)
         await ws.close()
 
+    async def test_view_only_serves_frames_but_rejects_arm_and_drive(self):
+        # Simulate even a contradictory ready sensor: this mode still cannot arm.
+        self.gateway.view_only = True
+        ws, state = await self.connect()
+        self.assertTrue(state['view_only'])
+        response = await self.client.get('/api/frame.jpg')
+        self.assertEqual(response.status, 200)
+        self.assertEqual(await response.read(), b'jpeg-test-bytes')
+        await ws.send_json(dict(type='arm', challenge=state['challenge'], frame='frame-1'))
+        state = await ws.receive_json(timeout=1)
+        self.assertFalse(state['armed'])
+        await ws.send_json(dict(type='drive', challenge=state['challenge'], frame='frame-1',
+                                seq=1, linear=1.0, angular=1.0))
+        await asyncio.sleep(0.07)
+        self.assertFalse(self.gateway.control.armed)
+        self.assertTrue(self.io.outputs)
+        self.assertTrue(all(command == (0, 0) for command in self.io.outputs))
+        self.assertEqual(self.gateway.fault(), 'Режим просмотра: управление отключено')
+        await ws.close()
+
     async def test_logout_revokes_socket_and_control(self):
         ws, state = await self.connect()
         await self.arm(ws, state)
