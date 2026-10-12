@@ -14,7 +14,7 @@ from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import CompressedImage
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Empty, String
 from aiohttp import web
 
 from .web_server import RobotServer
@@ -24,6 +24,7 @@ class WebNode(Node):
     def __init__(self):
         super().__init__('web_node')
         defaults = {'bind_host': '0.0.0.0', 'port': 8080, 'view_only': False,
+                    'camera_required': True,
                     'max_linear_mps': 0.25, 'max_angular_rps': 1.8}
         for key, value in defaults.items():
             self.declare_parameter(key, value)
@@ -37,22 +38,34 @@ class WebNode(Node):
         # Snapshot this mode at startup. Viewing slow frames must never create
         # a command publisher, even if a separate drive/ready publisher exists.
         self.view_only = bool(self.get_parameter('view_only').value)
-        self.frame_max_age = 5.0 if self.view_only else 0.7
+        self.camera_required = bool(self.get_parameter('camera_required').value)
+        self.preview_mode = self.view_only or not self.camera_required
+        self.frame_max_age = 5.0 if self.preview_mode else 0.7
         self.ready, self.ready_at = False, float('-inf')
+        self.source, self.source_at = 'disconnected', float('-inf')
         self.latest = None
         self.frames = {}
         self.pub = None
+        self.stop_pub = None
         if not self.view_only:
             self.pub = self.create_publisher(TwistStamped, 'cmd_vel', 1)
+            self.stop_pub = self.create_publisher(Empty, 'drive/stop', 1)
             self.create_subscription(Bool, 'drive/ready', self.on_ready, 1)
+            self.create_subscription(String, 'drive/source', self.on_source, 1)
         qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.BEST_EFFORT)
-        image_topic = ('camera/preview/compressed' if self.view_only
+        image_topic = ('camera/preview/compressed' if self.preview_mode
                        else 'camera/image_raw/compressed')
         self.create_subscription(CompressedImage, image_topic, self.on_frame, qos)
 
     def on_ready(self, msg):
         with self.lock:
             self.ready, self.ready_at = msg.data, time.monotonic()
+
+    def on_source(self, msg):
+        if msg.data not in ('bluetooth', 'wifi', 'idle', 'disconnected'):
+            return
+        with self.lock:
+            self.source, self.source_at = msg.data, time.monotonic()
 
     def on_frame(self, msg):
         if 'jpeg' not in msg.format.lower() or not 4 <= len(msg.data) <= 2_000_000:
@@ -76,8 +89,12 @@ class WebNode(Node):
     def health(self):
         with self.lock:
             frame = self.frames.get(self.latest[1]) if self.latest else None
+            now = time.monotonic()
+            source = self.source if now - self.source_at <= 0.35 else 'disconnected'
             return {'drive_ready': bool(not self.view_only and self.ready
-                                       and time.monotonic() - self.ready_at <= 0.35),
+                                       and now - self.ready_at <= 0.35
+                                       and source != 'bluetooth'),
+                    'drive_source': source,
                     'camera_fresh': self._fresh(frame)}
 
     def frame(self):
@@ -101,12 +118,17 @@ class WebNode(Node):
         msg.twist.angular.z = angular * self.get_parameter('max_angular_rps').value
         self.pub.publish(msg)
 
+    def emergency_stop(self):
+        """Explicit global STOP; ordinary Wi-Fi zeros must not cancel Bluetooth."""
+        if not self.view_only and self.stop_pub is not None and rclpy.ok():
+            self.stop_pub.publish(Empty())
+
 
 async def serve(node):
     filename = 'camera_view.html' if node.view_only else 'index.html'
     page = Path(get_package_share_directory('robot_web_teleop')) / 'web' / filename
     server = RobotServer(node, page, os.environ.get('ROBOT_PASSWORD', ''),
-                         view_only=node.view_only)
+                         view_only=node.view_only, camera_required=node.camera_required)
     runner = web.AppRunner(server.app, access_log=None)
     await runner.setup()
     try:
@@ -115,6 +137,8 @@ async def serve(node):
         node.get_logger().info(f'Phone UI: http://<Raspberry-Pi-LAN-IP>:{port}')
         if node.view_only:
             node.get_logger().info('VIEW ONLY: no cmd_vel publisher; motor bridge is not needed')
+        elif not node.camera_required:
+            node.get_logger().info('DIRECT SIGHT: watch the robot; video is an optional preview')
         while rclpy.ok():
             if server.ticker_task.done():
                 await server.ticker_task  # Surface its original exception.

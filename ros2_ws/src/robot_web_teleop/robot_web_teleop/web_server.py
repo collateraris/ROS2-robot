@@ -11,11 +11,12 @@ from .control import Control
 
 
 class RobotServer:
-    def __init__(self, io, page, password, *, view_only=False):
+    def __init__(self, io, page, password, *, view_only=False, camera_required=True):
         if len(password) < 8:
             raise ValueError('Set ROBOT_PASSWORD to at least 8 characters')
         self.io, self.page = io, Path(page)
         self.view_only = bool(view_only)
+        self.camera_required = bool(camera_required)
         self.password = password.encode('utf-8')
         self.control = Control()
         self.sessions, self.clients, self.attempts = {}, {}, {}
@@ -86,6 +87,7 @@ class RobotServer:
         health = self.io.health()
         return dict(type='state', authenticated=True, armed=self.control.armed,
                     view_only=self.view_only,
+                    camera_required=self.camera_required,
                     owner=self.control.owner == client and client is not None,
                     reason=self.control.reason, **health)
 
@@ -105,11 +107,13 @@ class RobotServer:
         if self.view_only:
             return 'Режим просмотра: управление отключено'
         health = self.io.health()
+        if health.get('drive_source') == 'bluetooth':
+            return 'Управляет Bluetooth. Отпустите кнопку Bluetooth для возврата к Wi-Fi'
         if not health['drive_ready']:
             return 'Arduino не готова'
-        if not health['camera_fresh']:
+        if self.camera_required and not health['camera_fresh']:
             return 'Камера не передаёт свежие кадры'
-        if check_frame and not self.io.frame_fresh(frame_token):
+        if self.camera_required and check_frame and not self.io.frame_fresh(frame_token):
             return 'Телефон не подтвердил свежий кадр'
         return ''
 
@@ -142,6 +146,12 @@ class RobotServer:
                     if kind == 'stop':
                         self.control.stop()
                         self.io.publish(0.0, 0.0)
+                        if not self.view_only:
+                            self.io.emergency_stop()
+                    elif kind == 'release':
+                        # Browser focus/lease loss releases only its own Wi-Fi
+                        # control. In particular, a BT takeover must not send E.
+                        self.disconnect(client)
                     elif kind in ('arm', 'drive'):
                         # Another viewer's invalid frame must not stop the owner.
                         if self.control.owner not in (None, client):

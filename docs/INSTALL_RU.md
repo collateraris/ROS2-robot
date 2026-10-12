@@ -1,371 +1,222 @@
-# Установка: Raspberry Pi, Windows 11 и телефон
+# Установка на вашу Raspberry Pi и запуск с Android / Windows
 
-Сам робот работает на **Ubuntu 24.04 LTS arm64 + ROS 2 Jazzy**. Телефон открывает страницу на Pi: получает JPEG-видео и отправляет команды по WebSocket. Arduino подключён к Pi по USB и управляет моторами. Компьютер нужен для установки, прошивки и разработки; после запуска в `tmux` по разделу 6 его можно выключить. Pi и Wi-Fi-роутер должны оставаться включёнными; если сеть раздаёт сам компьютер, выключать его нельзя. RTX 4090 для этого ручного управления не требуется.
+Используются ваши данные: Ubuntu 24.04 arm64, ROS 2 Jazzy, пользователь `shapturov`, адрес Pi `192.168.0.28`, USB-камера `/dev/video0`. Нужна Uno R3 / классическая Nano ATmega328P. В браузере телефона будут джойстик, СТОП и изображение; существующее Bluetooth-приложение продолжит управлять через прежний модуль.
 
-В примерах `192.168.1.42` — пример адреса Pi, `robot` — пример имени пользователя. **Замените их своими значениями.** Инструкция не создаёт пользователя `robot`: если вы вошли на Pi как `ubuntu`, используйте `ubuntu@АДРЕС_PI`. Все команды Bash выполняются на указанной машине; команды PowerShell — в Windows. До первой проверки поднимите колёса и прочитайте [подключение оборудования](HARDWARE_RU.md).
+**Перед первой загрузкой прочитайте HARDWARE_RU.md: ENA нужно перенести с D1 на D9.** Новая папка называется `robot_bluetooth_ros2`; это отдельный профиль под ваши три файла. Старый `robot_wifi_teleop` не запускайте одновременно с новым: у них одинаковые имя ROS-пакета, порт 8080 и аппаратные устройства.
 
-## 1. Ubuntu на Raspberry Pi
+## 1. SSH доступен после включения Raspberry Pi
 
-Нужны Raspberry Pi 4/5, карта microSD или другой поддерживаемый загрузочный накопитель, подходящее питание, USB-камера, Arduino и Wi-Fi-роутер. Для первого запуска удобны HDMI-монитор, клавиатура и временное соединение Ethernet.
-
-**На Windows:** установите [Raspberry Pi Imager](https://www.raspberrypi.com/software/). Выберите свою Pi и образ **Ubuntu Server 24.04 LTS, 64-bit / arm64**. Если его нет в списке, скачайте официальный образ Ubuntu 24.04 для Raspberry Pi и используйте выбор собственного образа. Не подменяйте его обычным ISO для PC, 32-битной системой или Ubuntu 26.04: команды ниже рассчитаны на Jazzy/Noble. Запись образа удалит данные с выбранного накопителя, поэтому проверьте его имя и размер.
-
-Если Imager предлагает настройки пользователя, Wi-Fi и SSH для выбранного Ubuntu-образа, заполните их. Поддержка настройки образов различается; гарантированный путь первого запуска — монитор, клавиатура и Ethernet. После загрузки дождитесь завершения cloud-init. На немодифицированном серверном образе Canonical используются `ubuntu` / `ubuntu` с обязательной сменой пароля; если пользователя меняли в настройках образа, используйте заданные данные.
-
-**В терминале Pi:**
-
-```bash
-cat /etc/os-release
-uname -m
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y openssh-server unzip
-sudo systemctl enable --now ssh
-hostname -I
-```
-
-Ожидаются Ubuntu 24.04 и `aarch64`. При запросе перезагрузки выполните `sudo reboot`, затем войдите снова. Сохраните IPv4-адрес Pi. Для постоянного адреса удобно настроить DHCP reservation на домашнем роутере.
-
-### Если Wi-Fi ещё не настроен
-
-Выполняйте этот раздел с локальной клавиатуры Pi. Сначала найдите имя беспроводного интерфейса:
-
-```bash
-ip -br link
-sudo ls /etc/netplan
-```
-
-Если Wi-Fi уже описан в существующем Netplan-файле, отредактируйте именно его, не создавая второе противоречащее описание. Для свежей Ubuntu Server с `networkd`, когда Wi-Fi ещё нигде не задан, создайте файл:
-
-```bash
-sudo nano /etc/netplan/90-robot-wifi.yaml
-```
-
-Содержимое — замените `wlan0`, SSID и пароль; отступы только пробелами:
-
-```yaml
-network:
-  version: 2
-  renderer: networkd
-  wifis:
-    wlan0:
-      dhcp4: true
-      access-points:
-        "YOUR_WIFI_SSID":
-          password: "YOUR_WIFI_PASSWORD"
-```
-
-```bash
-sudo chmod 600 /etc/netplan/90-robot-wifi.yaml
-sudo netplan try
-ip -4 -br address
-```
-
-Подтвердите рабочую конфигурацию в диалоге `netplan try`. Этот пример предназначен для Ubuntu Server с `networkd`; в Ubuntu Desktop проще выбрать сеть через графические настройки NetworkManager. Телефон и Pi должны быть в сети, в которой разрешено соединение клиентов между собой: гостевая Wi-Fi-сеть часто его блокирует.
-
-## 2. SSH и перенос проекта с Windows
-
-**PowerShell Windows:**
+На Windows, PowerShell:
 
 ```powershell
-ssh robot@192.168.1.42
+ssh shapturov@192.168.0.28
 ```
 
-Подтвердите ключ именно своего Pi при первом подключении. После входа этот терминал уже выполняет команды **на Pi**. Командой `exit` можно вернуться в Windows. В Windows 11 клиент OpenSSH обычно доступен; если команды `ssh`/`scp` нет, установите компонент OpenSSH Client в дополнительных компонентах Windows.
+После входа выполняйте следующие команды **на Pi**, в этом SSH-терминале:
 
-Распакуйте **полный архив проекта** на Windows. Проводник может добавить внешнюю папку с именем архива: нужна внутренняя папка `robot_wifi_teleop`, непосредственно содержащая `arduino`, `docs`, `ros2_ws` и `scripts`. Для команд ниже разместите именно её в Downloads; не должна получиться вложенность `robot_wifi_teleop/robot_wifi_teleop`. В отдельном **PowerShell Windows** сначала проверьте путь:
+```bash
+if systemctl is-active --quiet ssh.socket; then
+    sudo systemctl enable ssh.socket
+else
+    sudo systemctl enable ssh.service
+fi
+systemctl list-unit-files ssh.service ssh.socket
+```
+
+Команда сохраняет тот способ запуска, которым уже обслуживается ваш SSH. Для выбранного unit в столбце STATE должно быть `enabled`. В Ubuntu 24.04 SSH обычно запускается по входящему подключению через `ssh.socket`; при этом `ssh.service` может быть `disabled`, и это не означает, что SSH после загрузки недоступен. `enable` включает автозапуск, не останавливая текущую SSH-сессию.
+
+Pi должна загрузиться и подключиться к известной Wi-Fi-сети. Для сохранения адреса `192.168.0.28` откройте настройки домашнего роутера и закрепите этот адрес за Wi-Fi MAC-адресом Pi в DHCP reservation / Address Reservation. Не назначайте случайный статический адрес через SSH: ошибка сетевой конфигурации может лишить доступа. Подключение с Windows всегда остаётся `ssh shapturov@192.168.0.28`.
+
+[Ubuntu 24.04: SSH socket activation](https://documentation.ubuntu.com/release-notes/24.04/), [systemctl](https://manpages.debian.org/bookworm/systemd/systemctl.1.en.html), [DHCP reservation Raspberry Pi](https://www.raspberrypi.com/documentation/computers/configuration.html#manage-dhcp-and-static-ip).
+
+## 2. Прошить Arduino и скопировать проект
+
+Скачайте полный архив и распакуйте так, чтобы в Windows существовала папка:
+
+```text
+C:\Users\twoli\Downloads\robot_bluetooth_ros2
+```
+
+Внутри неё сразу должны быть `arduino`, `ros2_ws`, `scripts`, `docs`; Проводник иногда добавляет дополнительную внешнюю папку с именем архива. Не копируйте только внешнюю оболочку.
+
+На Windows откройте `arduino/blu_drive/blu_drive.ino` в Arduino IDE. `motor.h` и `move_case.h` должны лежать рядом. Выберите вашу Uno/Nano и её COM-порт, скомпилируйте и загрузите. Сначала перенесите ENA на D9 и отключите питание моторов на время переподключения. После прошивки закройте Serial Monitor, подключите Arduino к Pi кабелем USB с передачей данных.
+
+В отдельном **PowerShell Windows**:
 
 ```powershell
-Test-Path "$env:USERPROFILE\Downloads\robot_wifi_teleop\scripts\install_jazzy.sh"
+Test-Path "$env:USERPROFILE\Downloads\robot_bluetooth_ros2\scripts\run_robot.sh"
+scp -r "$env:USERPROFILE\Downloads\robot_bluetooth_ros2" shapturov@192.168.0.28:~/
 ```
 
-Ожидается `True`. Если получилось `False`, найдите правильную внутреннюю папку; не переносите пустую внешнюю оболочку. Затем скопируйте проект целиком:
+Первая команда должна вернуть `True`. Не используйте `127.0.0.1` или `127.0.1.1`: из PowerShell это адрес самого компьютера, не Pi.
+
+## 3. Зависимости ROS 2
+
+Поскольку вы уже установили Jazzy, повторная установка ОС и ROS не нужна. В SSH на **Pi**:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+sudo apt update
+sudo apt install -y ros-jazzy-cv-bridge python3-opencv python3-aiohttp python3-serial python3-yaml ros-dev-tools v4l-utils unzip tmux
+sudo usermod -aG dialout,video shapturov
+```
+
+Выйдите командой `exit` и снова подключитесь с Windows, чтобы новая оболочка получила группы `dialout` и `video`:
 
 ```powershell
-scp -r "$env:USERPROFILE\Downloads\robot_wifi_teleop" robot@192.168.1.42:~/
+ssh shapturov@192.168.0.28
 ```
 
-Дальше ожидается корень проекта `~/robot_wifi_teleop` на Pi. Проверьте в **SSH-сеансе Pi**:
-
-```bash
-ls ~/robot_wifi_teleop/scripts/install_jazzy.sh
-```
-
-Если файла нет, исправьте расположение папки перед следующими шагами. Сначала прошейте Arduino по HARDWARE_RU.md, затем соедините его USB с Pi.
-
-## 3. ROS 2 Jazzy и зависимости на Pi
-
-В комплекте есть установщик для свежей Ubuntu 24.04. **Терминал Pi / SSH:**
-
-```bash
-cd ~/robot_wifi_teleop
-bash scripts/install_jazzy.sh pi
-```
-
-Изучить или выполнить установку вручную можно по следующему разделу. Это **альтернатива** установщику, повторять оба варианта подряд не нужно. Не устанавливайте `rclpy` через pip: здесь используются согласованные системные пакеты Ubuntu/ROS.
-
-### Ручная установка вместо скрипта
-
-**Pi / SSH, Bash:**
-
-```bash
-sudo apt update
-sudo apt install -y locales software-properties-common curl python3
-sudo locale-gen en_US en_US.UTF-8
-sudo update-locale LANG=en_US.UTF-8
-export LANG=en_US.UTF-8
-sudo add-apt-repository -y universe
-ROS_APT_SOURCE_VERSION=$(curl -fsSL https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
-curl -fL -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.noble_all.deb"
-sudo dpkg -i /tmp/ros2-apt-source.deb
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y ros-jazzy-ros-base ros-dev-tools ros-jazzy-cv-bridge ros-jazzy-sensor-msgs ros-jazzy-geometry-msgs ros-jazzy-std-msgs python3-opencv python3-aiohttp python3-serial python3-yaml v4l-utils tmux
-```
-
-Если получение версии `ROS_APT_SOURCE_VERSION` или скачивание завершилось ошибкой, остановитесь и проверьте подключение; не продолжайте установку с пустой версией. Пакет `ros2-apt-source` добавляет репозиторий и ключи ROS. Если ROS уже установлен старым способом и apt сообщает о конфликтующих источниках или `Signed-By`, исправьте дубли в `/etc/apt/sources.list.d/` по официальной инструкции ROS, а не добавляйте очередную копию источника.
-
-Разрешите обычному пользователю доступ к USB Arduino и камере:
-
-```bash
-sudo usermod -aG dialout,video "$USER"
-```
-
-**Выйдите из сеанса и войдите снова**; уже запущенная оболочка не получает новые группы автоматически. Затем:
+На Pi:
 
 ```bash
 groups
-source /opt/ros/jazzy/setup.bash
-ros2 --help
-```
-
-В списке групп должны быть `dialout` и `video`. Запуск ROS от root не нужен.
-
-## 4. Найти Arduino и устройство камеры
-
-**Pi / SSH:**
-
-```bash
 ls -l /dev/serial/by-id/
 v4l2-ctl --list-devices
 ```
 
-Предпочтительно использовать найденный полный путь Arduino `/dev/serial/by-id/...`: он устойчивее, чем порядковый `/dev/ttyACM0`. Если USB-адаптер не создаёт `by-id`, найдите реальный `/dev/ttyACM*` или `/dev/ttyUSB*` и используйте его. Проект не угадывает порт автоматически. Arduino Serial Monitor и другие владельцы порта должны быть закрыты.
+Для Arduino используйте найденный `/dev/serial/by-id/...`, если он существует. У Uno это часто `/dev/ttyACM0`, у Nano с USB-UART адаптером — `/dev/ttyUSB0`; выбирайте фактически появившееся устройство. Проект не угадывает порт. В примере запуска ниже `/dev/ttyACM0` нужно заменить, если ваша плата определяется иначе.
 
-Для выбранной камеры, например `/dev/video0`:
+### Если Jazzy на новой Pi ещё нет
+
+Нужна именно Ubuntu 24.04 arm64 / Noble, не Raspberry Pi OS. Проверка:
 
 ```bash
-v4l2-ctl -d /dev/video0 --list-formats-ext
-v4l2-ctl -d /dev/video0 --stream-mmap --stream-count=10 --stream-to=/dev/null
+cat /etc/os-release
+uname -m
 ```
 
-Используйте путь, который действительно выдаёт кадры. Некоторые камеры создают несколько устройств, включая узлы метаданных. При наличии подходящего `/dev/v4l/by-id/...-video-index0` его тоже можно передать в launch. Поддержка конкретного режима MJPG, 640×480 и 15 fps зависит от камеры; список форматов показывает доступные варианты.
+Для свежей Ubuntu 24.04 используйте включённый установщик вместо ручного добавления второго ROS-репозитория:
 
-Если камера на CSI-шлейфе, остановитесь на выборе драйвера: этот комплект захватывает USB UVC через V4L2. Для неизвестной CSI-камеры совместимость Ubuntu 24.04 с данным узлом не заявлена; подробнее в HARDWARE_RU.md.
+```bash
+cd ~/robot_bluetooth_ros2
+bash scripts/install_jazzy.sh pi
+```
 
-## 5. Собрать ROS-пакет
+Он устанавливает ros-jazzy-ros-base, зависимости проекта и rosdep. После изменения групп снова войдите по SSH. [Официальная инструкция Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html), [официальное зеркало](https://repo.test.ros2.org/en/jazzy/Installation/Ubuntu-Install-Debs.html).
 
-**Pi / SSH:**
+### Если повторится ваша ошибка apt с liblz4 / libzstd
+
+Сначала проверьте, что в `/etc/apt/sources.list.d/ubuntu.sources` у обычного архива Ubuntu включены `noble` и `noble-updates`. Ранее в присланном выводе был виден `noble-security`, но не `noble-updates`: это возможная причина несогласованных версий, а не доказательство held-пакетов. Добавьте `noble-updates` к существующей строке Suites обычного Ubuntu-архива, сохранив URIs, Components, Signed-By и отдельную секцию security; затем выполните `sudo apt update` и повторите установку. Не понижайте библиотеки и не удаляйте пакеты вслепую.
+
+## 4. Сборка нового проекта
+
+В **новом SSH-терминале Pi**, чтобы не наследовать вручную подключённую старую сборку:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-cd ~/robot_wifi_teleop/ros2_ws
+cd ~/robot_bluetooth_ros2/ros2_ws
 ```
 
-Если `rosdep` ещё ни разу не инициализировался на этой системе, выполните один раз:
+Если rosdep уже инициализирован, повторять init не нужно. Для новой системы:
 
 ```bash
-sudo rosdep init
-```
-
-Если он сообщает, что файл `20-default.list` уже существует, повторная инициализация не нужна. Продолжите:
-
-```bash
+if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then
+    sudo rosdep init
+fi
 rosdep update
 rosdep install --from-paths src --ignore-src -y --rosdistro jazzy
 colcon build --symlink-install
 source install/setup.bash
+ros2 pkg prefix robot_web_teleop
 ```
 
-Не копируйте каталоги `build`, `install` и `log` между Windows, WSL и Pi: пакет собирается отдельно на каждой машине. При добавлении или изменении конфигурационных файлов после сборки повторите `colcon build --symlink-install`.
+Последний путь должен указывать на `robot_bluetooth_ros2/ros2_ws/install`, а не на старый проект. Если в `.bashrc` автоматически подключается старый workspace, подключите новый `install/setup.bash` последним. Не копируйте build/install/log с Windows или старого workspace.
 
-### Исправление уже распакованной предыдущей версии
+Исправление `Cannot locate rosdep definition for [ament_python]` уже учтено: в package.xml сохранён `<export><build_type>ament_python</build_type></export>`, ошибочного `<buildtool_depend>ament_python</buildtool_depend>` нет.
 
-Если `rosdep install` сообщает `Cannot locate rosdep definition for [ament_python]`, откройте `~/robot_wifi_teleop/ros2_ws/src/robot_web_teleop/package.xml` и удалите только строку `<buildtool_depend>ament_python</buildtool_depend>`. Строку `<export><build_type>ament_python</build_type></export>` сохраните: она задаёт тип сборки пакета. В обновлённом архиве зависимость уже исправлена. Затем из `~/robot_wifi_teleop/ros2_ws` повторите `rosdep install --from-paths src --ignore-src -y --rosdistro jazzy` и `colcon build --symlink-install`.
+## 5. Запуск робота и телефона
 
-Если ранее установка остановилась из-за отсутствующего источника `noble-updates`, вручную откройте файл источников Ubuntu: `sudo nano /etc/apt/sources.list.d/ubuntu.sources`. В секции обычного архива Ubuntu добавьте `noble-updates` к существующей строке `Suites:`; например, `Suites: noble noble-updates noble-backports`, если `noble-backports` уже был включён. Сохраните существующие адреса `URIs`, компоненты, ключ `Signed-By` и отдельную секцию `noble-security`. После сохранения выполните `sudo apt update`, затем повторите прерванный шаг установки. Это ручная правка источников Ubuntu, а не ROS-репозитория.
+Остановите предыдущие `robot.launch.py`, `camera_node`, `web_node`, Serial Monitor и любые другие процессы, владеющие камерой или Arduino. В их терминале используйте `Ctrl+C`. Если работали в tmux, сначала вернитесь в тот сеанс; второй сервер на 8080 запускать нельзя.
 
-## 6. Запуск и управление с телефона
-
-### Сначала только изображение, без управления
-
-После сборки можно запустить камеру и страницу просмотра отдельной командой. Остановите ранее запущенный `robot.launch.py`, `camera_node` и `web_node` сочетанием `Ctrl+C` в их терминалах; если запуск был в `tmux`, сначала присоединитесь к тому же сеансу. Не запускайте два захвата одной камеры и два сервера на порту 8080.
+Первое испытание — колёса подняты. На **Pi**:
 
 ```bash
-cd ~/robot_wifi_teleop
+cd ~/robot_bluetooth_ros2
+bash scripts/run_robot.sh serial_port:=/dev/ttyACM0 camera_device:=/dev/video0 camera_required:=false
+```
+
+Если Arduino — `/dev/ttyUSB0`, передайте `serial_port:=/dev/ttyUSB0`. Можно указать фактический длинный by-id путь. Скрипт запросит пароль страницы, минимум 8 символов. Это отдельный пароль пульта, не обязательно пароль SSH. Оставьте запуск работающим.
+
+На **Android**:
+
+1. Подключитесь к той же домашней Wi-Fi-сети, что и Pi. Сеть должна разрешать соединения между клиентами.
+2. В Chrome или другом современном браузере откройте **http://192.168.0.28:8080/**.
+3. Введите заданный пароль. При необходимости сделайте ярлык страницы через меню браузера; отдельный APK не требуется.
+4. Дождитесь «Arduino: Wi-Fi готов», отпустите кнопки старого Bluetooth-пульта и нажмите «Взять управление».
+5. Удерживайте джойстик для движения. Отпускание посылает ноль. Кнопка СТОП запрашивает остановку Wi-Fi и Bluetooth.
+
+Для `camera_required:=false` интерфейс показывает «Управление в прямой видимости — смотри на робота». При ваших медленных кадрах этот профиль позволяет ручное управление с наблюдением за самим роботом. Остановка/отсутствие камеры не блокирует движение; связь с Arduino и свежие команды остаются обязательными.
+
+Для режима, требующего свежего видео, остановите старый запуск и выполните:
+
+```bash
+bash scripts/run_robot.sh serial_port:=/dev/ttyACM0 camera_device:=/dev/video0 camera_required:=true
+```
+
+При чтении 0.6–0.75 с ваша камера может не пройти этот контроль. Причина низкой частоты ещё не установлена; увеличение разрешённого возраста не устраняет задержку реального изображения. См. CAMERA_SLOW_RU.md.
+
+Чтобы проверить только изображение, остановите полный launch и запустите:
+
+```bash
 bash scripts/view_camera.sh camera_device:=/dev/video0
 ```
 
-Задайте пароль из 8 или более символов и оставьте команду работающей. Откройте в браузере телефона или Windows `http://АДРЕС_PI:8080/`, подставив настоящий адрес Pi. Этот запуск использует `camera_view.launch.py`, запрашивает MJPG 640×480, 30 fps и запускает только камеру с веб-сервером. Страница называется «Камера робота» и не содержит кнопок движения. В этом режиме веб-узел не создаёт издателя `cmd_vel`, а `motor_bridge` не запускается.
+В этом режиме нет управления моторами и USB-мост не запускается. Возвращаясь к управлению, остановите просмотр через Ctrl+C.
 
-Просмотр принимает также успешно прочитанные медленные кадры через отдельную тему `/robot/camera/preview/compressed`. Их возраст ограничен 5 секундами от получения на Pi; метки времени не подменяются. Это позволяет увидеть изображение камеры с частотой около 1–2 кадров/с, но не ускоряет её и не разрешает управление с такой картинкой. Обычные темы изображения сохраняют ограничение длительности чтения `max(0.5, 2/fps)` секунды. Успешное медленное чтение больше не вызывает переподключение. Разбор причины и последовательность проверок: [CAMERA_SLOW_RU.md](CAMERA_SLOW_RU.md).
+### Сохранить процесс при закрытии SSH
 
-Для завершения просмотра нажмите `Ctrl+C`. Полный запуск управления описан ниже; `view_camera.sh` и `run_robot.sh` не запускают одновременно.
-
-### Полный запуск управления
-
-Первый запуск — с поднятыми колёсами. Используйте `tmux`, чтобы процесс на Pi продолжал работать после закрытия SSH. Он устанавливается скриптом и ручной командой выше. В новом **терминале Pi / SSH** создайте сеанс:
+Автозапуск SSH и работа ROS-программы — разные задачи. Для сохранения текущего запуска используйте tmux:
 
 ```bash
 tmux new -s robot
+cd ~/robot_bluetooth_ros2
+bash scripts/run_robot.sh serial_port:=/dev/ttyACM0 camera_required:=false
 ```
 
-Откроется оболочка внутри `tmux`; следующие команды запуска выполняйте **в ней**. Если сеанс `robot` уже существует, вместо создания используйте `tmux attach -t robot` и убедитесь, что робот ещё не запущен: второй экземпляр launch запускать нельзя.
+Отсоединиться от tmux: `Ctrl+B`, отпустить клавиши, затем `D`. Вернуться: `tmux attach -t robot`. Для остановки программы вернитесь в сеанс и нажмите Ctrl+C. Само включение SSH не запускает моторы и не включает этот launch.
 
-Короткий запуск внутри `tmux`:
+## 6. Контроль из терминала ROS
 
-```bash
-cd ~/robot_wifi_teleop
-bash scripts/run_robot.sh serial_port:=/dev/serial/by-id/REAL_ID camera_device:=/dev/video0 namespace:=robot
-```
-
-Скрипт запросит пароль, подключит ROS-среду и выставит локальное обнаружение с доменом 42. Эквивалентный ручной запуск **в том же сеансе `tmux`, вместо скрипта**, а не дополнительно к нему:
+В другом SSH-сеансе Pi:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-source ~/robot_wifi_teleop/ros2_ws/install/setup.bash
+source ~/robot_bluetooth_ros2/ros2_ws/install/setup.bash
 export ROS_DOMAIN_ID=42
 export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
-read -rsp 'Пароль web, минимум 8 символов: ' ROBOT_PASSWORD
-printf '\n'
-export ROBOT_PASSWORD
-ros2 launch robot_web_teleop robot.launch.py serial_port:=/dev/serial/by-id/REAL_ID camera_device:=/dev/video0 namespace:=robot
-```
-
-`REAL_ID` замените настоящим именем из раздела 4. При необходимости измените путь камеры. Пароль вводится без отображения и не попадает как аргумент в историю команд. Запомните его для входа на телефоне. Узлам нужен обычный системный час Pi; не включайте `use_sim_time` для настоящего робота.
-
-После появления сообщений запуска нажмите **`Ctrl+B`, отпустите обе клавиши, затем нажмите `D`**. Это отсоединит терминал от `tmux`, сохранив работу узлов на Pi. Теперь можно закрыть SSH и выключить компьютер. Не нажимайте `Ctrl+C` для отсоединения — эта комбинация останавливает launch.
-
-Чтобы вернуться к журналу запуска, снова подключитесь из Windows командой `ssh robot@192.168.1.42`, затем **на Pi** выполните:
-
-```bash
-tmux attach -t robot
-```
-
-На телефоне подключитесь к той же домашней Wi-Fi-сети и откройте **`http://192.168.1.42:8080`**, подставив адрес Pi. Введите пароль. Проверьте живую картинку и готовность привода, нажмите **«Взять управление»**, затем держите и перемещайте джойстик. Отпускание джойстика обнуляет движение; **«СТОП»**, потеря соединения или устаревшее видео отключают управление. После сбоя отпустите джойстик, дождитесь свежей картинки и снова нажмите «Взять управление».
-
-Видео передаётся последовательными запросами JPEG примерно до 10 раз в секунду. Страница подтверждает кадр только после декодирования. Если телефон не подтверждает свежий кадр около 0.7 секунды, движение прекращается, даже когда камера на Pi продолжает работать. Закрытый/заблокированный телефон или фоновая вкладка могут перестать подтверждать кадры; это нормальная причина остановки.
-
-Сервер слушает порт 8080. Этот комплект рассчитан на доверенную локальную сеть: **HTTP не шифрует пароль и видео**, поэтому не пробрасывайте порт 8080 из интернета. Для первого запуска не нужны rosbridge, web_video_server, отдельное приложение телефона или ROS на телефоне. Не запускайте второй процесс, публикующий команды в тот же `cmd_vel`.
-
-Для остановки нажмите «СТОП» на телефоне, отпустите джойстик, присоединитесь к сеансу через `tmux attach -t robot` и нажмите **`Ctrl+C` внутри него**. Дождитесь завершения узлов. Команда `exit` после этого закроет оставшуюся оболочку и сеанс `tmux`. Перед работой с проводами отключите моторное питание.
-
-`tmux` сохраняет процесс при разрыве SSH, но **не после перезагрузки или отключения питания Pi**. После каждого такого включения снова подключитесь по SSH, создайте `tmux new -s robot` и запустите скрипт. Автоматического запуска при загрузке в комплекте нет. Если запускать launch напрямую в обычной SSH-оболочке без `tmux`, этот SSH-сеанс нужно оставлять открытым.
-
-### Параметры
-
-Файл параметров пакета находится в `ros2_ws/src/robot_web_teleop/config/robot.yaml`. Это обычный YAML с разделами `camera`, `motor`, `web`, который читает launch, а не стандартный ROS-файл для `--params-file`. Значения камеры по умолчанию: `width: 640`, `height: 480`, **`fps: 15.0`**, `jpeg_quality: 70`. ROS различает типы integer/double, поэтому сохраняйте `.0` у параметров, объявленных как float.
-
-Геометрию `wheel_track_m` задайте по своему шасси. `max_wheel_speed_mps` — масштаб преобразования команды в PWM, требующий экспериментальной настройки, а `pwm_limit` — предел мощности 1…140. Без энкодеров фактическая скорость зависит от батареи, нагрузки и поверхности. Уменьшите предел для первой проверки; программное ограничение не исправляет неподходящий силовой драйвер.
-
-Начальное значение ползунка в браузере — **35%**. Оно дополнительно уменьшает команду: при полностью сдвинутом вперёд джойстике и стандартных настройках получается около **31 из 255 PWM**, а при `pwm_limit: 40` — около **9 из 255**. Этого может не хватить для старта моторов даже при исправной связи. Если привод готов, но моторы стоят или гудят, отпустите джойстик. На поднятых колёсах кратковременно увеличивайте ползунок и, если нужно, `pwm_limit` небольшими шагами, проверяя питание и проводку; не держите остановленный мотор под током. После изменения YAML пересоберите пакет и перезапустите launch. Не трактуйте отсутствие движения при малом PWM как доказательство неисправности ROS.
-
-## 7. Проверка и диагностика без DDS через Wi-Fi
-
-Откройте **второй SSH-сеанс на Pi** и задайте ту же ROS-среду, что у запуска:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-source ~/robot_wifi_teleop/ros2_ws/install/setup.bash
-export ROS_DOMAIN_ID=42
-export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
-ros2 node list
 ros2 topic list
-ros2 topic info /robot/camera/image_raw/compressed --verbose
-ros2 topic echo /robot/drive/ready --once
+ros2 topic echo /robot/drive/source
 ```
 
-Основные темы:
+Чтобы смотреть готовность вместо источника, завершите echo и выполните:
 
-| Тема | Тип | Назначение |
-|---|---|---|
-| `/robot/camera/image_raw` | `sensor_msgs/msg/Image` | BGR8, фактические размеры камеры |
-| `/robot/camera/image_raw/compressed` | `sensor_msgs/msg/CompressedImage` | JPEG для веб-сервера |
-| `/robot/camera/preview/compressed` | `sensor_msgs/msg/CompressedImage` | Отдельный просмотр, включая медленные кадры; включается через `view_camera.sh` |
-| `/robot/cmd_vel` | `geometry_msgs/msg/TwistStamped` | Свежая разрешённая команда |
-| `/robot/drive/ready` | `std_msgs/msg/Bool` | USB и Arduino подтвердили готовность |
+```bash
+ros2 topic echo /robot/drive/ready
+```
 
-Камера использует `BEST_EFFORT`, очередь глубиной 1. Собственному подписчику изображения задавайте sensor-data QoS; подписчик, требующий `RELIABLE`, не соединится с таким издателем. Узел не повторяет старый кадр как новый. Метка времени — момент завершения чтения на Pi, а не аппаратное время экспозиции камеры.
+Явный общий СТОП из терминала:
 
-| Симптом | Что проверить |
-|---|---|
-| Телефон не открывает страницу | Правильный IP/8080, сервер запущен, телефон и Pi в доступной друг другу сети, нет client isolation |
-| Страница открывается, привод не готов | USB-кабель с данными, настоящий serial_port, прошивка, группы, отсутствие Serial Monitor |
-| Привод готов, движения нет | Моторное питание, направление/ENA/ENB/STBY, разрешение управления, свежая картинка; слишком малое произведение ползунка и PWM-предела |
-| Картинка отсутствует | Нужный V4L2-узел, группа video, поддерживаемый формат, другая программа не заняла камеру |
-| Чтение успешно, но длится более 0.5 с | Запустить отдельный просмотр и выполнить [диагностику низкой частоты](CAMERA_SLOW_RU.md); обычный пульт такие кадры не получает |
-| Всё сбрасывается при старте моторов | Питание Pi, аккумулятор, силовая проводка и ток драйвера |
-| После изменения ROS-среды не видно узлов | Те же namespace/domain/discovery-параметры; при необходимости `ros2 daemon stop`, затем повторить команду |
+```bash
+ros2 topic pub --once /robot/drive/stop std_msgs/msg/Empty '{}'
+```
 
-Если на Pi уже включён UFW или другой firewall, разрешите TCP 8080 и SSH только из своей локальной подсети. Не отключайте весь firewall ради проверки. `LOCALHOST` ограничивает автоматическое ROS-обнаружение и не является защитой от других программ на самом Pi.
+Обычный нулевой cmd_vel не предназначен для остановки Bluetooth. До/после BT используйте штатные кнопки и проверьте фактическое состояние робота. Подтверждения serial — это применённый PWM, а не датчик вращения.
 
-USB-захват выполняется в отдельном потоке, поэтому зависший `VideoCapture.read()` не держит ROS-цикл управления. При обычной ошибке узел пытается переоткрыть камеру. V4L2 не гарантирует жёсткий таймаут чтения через OpenCV: при зависании драйвера может понадобиться перезапуск узла/процесса. В это время веб-сервер перестаёт разрешать движение по устаревшему видео.
+Управление через браузер не требует DDS между Windows и Pi: ROS-узлы работают на Pi, сеть передаёт HTTP/WebSocket. Windows нужен для SSH, Arduino IDE и браузера. RTX 4090 для ручного пульта не используется. Если позже понадобится ROS на ПК, можно установить Ubuntu 24.04 в WSL2 и Jazzy отдельно; к этому запуску он не нужен.
 
-## 8. ROS 2 на Windows 11 через WSL2 — необязательно для езды
+## 7. Если страница не открывается
 
-Для настройки робота достаточно PowerShell, SSH и браузера. WSL нужен, если вы хотите учиться ROS, запускать локальные примеры и RViz. Все следующие Linux-команды выполняются в **Ubuntu WSL**, а не на Pi.
-
-**PowerShell от администратора:**
+Проверьте, что launch ещё работает и не сообщил об ошибке порта/пароля. На Windows:
 
 ```powershell
-wsl --list --online
-wsl --install -d Ubuntu-24.04
-wsl --update
-wsl --list --verbose
+Test-NetConnection 192.168.0.28 -Port 8080
 ```
 
-Перезагрузите Windows, если установщик попросит. Откройте Ubuntu 24.04, создайте Linux-пользователя и пароль. В `wsl --list --verbose` у Ubuntu должна быть версия 2. Если установлена другая Ubuntu, не считайте её автоматически совместимой с Jazzy: нужна именно 24.04. Команда `wsl -d Ubuntu-24.04` открывает нужную систему.
-
-Перенесите папку исходников из Windows Downloads в домашний каталог WSL; имя Windows-пользователя замените своим:
+На Pi:
 
 ```bash
-cp -r "/mnt/c/Users/YOUR_WINDOWS_USER/Downloads/robot_wifi_teleop" ~/
-cd ~/robot_wifi_teleop
-bash scripts/install_jazzy.sh pc
-source /opt/ros/jazzy/setup.bash
+ss -ltnp 'sport = :8080'
 ```
 
-Для ручной установки используйте общую часть настройки репозитория из раздела 3, затем установите `ros-jazzy-desktop` и `ros-dev-tools`. Для сборки этого проекта в WSL понадобятся также Python/ROS-зависимости из раздела 3, но подключать Arduino и запускать аппаратный launch на PC не требуется.
-
-Проверка в **первом терминале Ubuntu WSL**:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-export ROS_DOMAIN_ID=42
-export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
-ros2 run demo_nodes_cpp talker
-```
-
-Во **втором терминале той же Ubuntu WSL**:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-export ROS_DOMAIN_ID=42
-export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
-ros2 run demo_nodes_py listener
-```
-
-Должны появляться полученные сообщения. Для проверки GUI остановите один из примеров и запустите `rviz2`. Windows 11 с обновлённым WSL поддерживает Linux GUI через WSLg; отдельный X-сервер и ручное переопределение DISPLAY в базовом варианте не нужны.
-
-**Эти WSL-узлы локальные и не обязаны видеть Pi.** У робота специально выбран локальный ROS, а управление и видео уже доступны по HTTP. Для просмотра состояния Pi используйте SSH-раздел 7; для изображения — страницу в браузере Windows. Передача DDS между WSL и Pi — отдельная конфигурация сети, multicast и firewall, и в базовый запуск не входит.
-
-## Официальные источники
-
-- [ROS 2 Jazzy: Ubuntu deb installation](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html); [официальное зеркало](https://repo.test.ros2.org/en/jazzy/Installation/Ubuntu-Install-Debs.html).
-- [Пакет ros2-apt-source](https://github.com/ros-infrastructure/ros-apt-source).
-- [Canonical: установка Ubuntu на Raspberry Pi](https://ubuntu.com/hardware/docs/boards/how-to/ubuntu_supported/raspberry-pi/).
-- [Netplan: примеры настройки сети](https://netplan.readthedocs.io/en/stable/examples/).
-- [Microsoft: установка WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
-- [Microsoft: Linux GUI / WSLg](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
-- [OpenCV: свойства VideoCapture и ограничения backend](https://docs.opencv.org/4.x/d4/d15/group__videoio__flags__base.html).
-- [tmux: официальный Getting Started](https://github.com/tmux/tmux/wiki/Getting-Started).
+Если SSH работает, а 8080 — нет, сначала проверьте процесс web_node. Если он слушает, проверьте firewall и изоляцию Wi-Fi-клиентов. Открывайте нужный порт только для своей домашней сети; не отключайте весь firewall и не пробрасывайте 8080 в интернет. Если браузер показывает Bluetooth, сначала отпустите кнопку Bluetooth и дождитесь ready, затем заново возьмите управление.

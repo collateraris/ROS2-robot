@@ -28,6 +28,7 @@ button:focus-visible,input:focus-visible{outline:3px solid #64d5ee;outline-offse
 .north,.south{position:absolute;left:0;right:0;text-align:center;font-size:10px;letter-spacing:.8px;color:#b7c7dc;pointer-events:none}.north{top:8%}.south{bottom:8%}
 .readout{color:#a9bed4;font-size:12px;font-variant-numeric:tabular-nums} .speed{font-size:13px;color:#bbc8d9}.speed span{float:right;color:#eaf7fc;font-weight:700} input[type=range]{width:100%;height:30px;margin:4px 0 0;accent-color:#80deef}
 .stop{background:#ed5a54;color:#fff;min-height:60px;font-size:20px;letter-spacing:1px}.stop:active{background:#c83c39}.note{min-height:42px;font-size:13px;color:#b9c9dd;margin:0} footer{font-size:12px;margin-top:14px}
+.modeBanner{margin:0 0 14px;padding:12px 16px;border:1px solid #876b34;border-radius:12px;background:#2b2518;color:#f3d18d;font-size:13px}
 @media(max-width:720px) and (orientation:portrait){.wrap{padding-top:14px}header{margin-bottom:12px}.brand{font-size:19px}main{grid-template-columns:1fr;gap:12px}.controls{padding:16px}.stick{width:min(58vw,225px)}}
 @media(orientation:landscape) and (max-height:580px){.wrap{padding-top:8px;padding-bottom:8px}header{margin-bottom:8px}.brand{font-size:18px}main{grid-template-columns:minmax(0,1.15fr) minmax(305px,1fr);gap:10px}.video{aspect-ratio:auto;height:max(165px,calc(100dvh - 135px))}.telemetry{padding:8px;font-size:11px;gap:4px 9px}.controls{padding:12px;display:grid;grid-template-columns:135px 1fr;gap:8px}.controls h2,.readout{display:none}.driveArea{grid-column:1;grid-row:1/5;align-self:center}.stick{width:135px}#arm{grid-column:2;grid-row:1;padding:9px;font-size:12px}.speed{grid-column:2;grid-row:2}.stop{grid-column:2;grid-row:3;min-height:45px;font-size:17px}.note{grid-column:2;grid-row:4;font-size:11px;min-height:0}footer{margin-top:8px;font-size:11px}}
 </style>
@@ -36,14 +37,15 @@ button:focus-visible,input:focus-visible{outline:3px solid #64d5ee;outline-offse
 <header><div class="brand">Робот <span class="muted">/ Wi-Fi пульт</span></div><span id="link" class="badge">Нет соединения</span><button id="logout" class="quiet" hidden>Выйти</button></header>
 <section id="login" class="login card"><h1>Подключиться к роботу</h1><p class="muted">Телефон и сервер робота должны находиться в одной Wi-Fi сети.</p>
 <form id="loginForm"><label for="password">Пароль пульта</label><input id="password" type="password" autocomplete="current-password" required maxlength="256"><button id="loginButton" class="primary">Подключиться</button><div id="loginError" class="error" role="alert"></div></form></section>
+<aside id="modeBanner" class="modeBanner" hidden>Проверка режима управления…</aside>
 <main id="dashboard" hidden>
 <section class="card" aria-label="Видео робота"><div class="video"><img id="camera" width="640" height="480" alt="Камера робота"><span class="videoLabel">КАМЕРА РОБОТА</span><div id="videoCover" class="cover">Ожидание свежего кадра</div></div>
 <div class="telemetry"><span id="cameraStatus">Видео: ожидание</span><span id="driveStatus">Arduino: проверка</span></div></section>
 <section class="controls card"><h2>Управление движением</h2><button id="arm" class="primary" disabled>Взять управление</button>
 <div class="driveArea"><div id="stick" class="stick" role="group" aria-label="Джойстик: удерживайте для движения, отпустите для остановки"><span class="north">ВПЕРЁД</span><span class="south">НАЗАД</span><div id="knob" class="knob"></div></div><div id="readout" class="readout">Тяга 0% · поворот 0%</div></div>
 <label class="speed" for="speed">Предел скорости <span id="speedValue">35%</span><input id="speed" type="range" min="0" max="100" value="35" step="5"></label>
-<button id="stop" class="stop">СТОП</button><p id="note" class="note" role="status" aria-live="polite">Сначала дождитесь видео и возьмите управление.</p></section>
-</main><footer>Держите джойстик, чтобы ехать. Отпустите — робот получит нулевую команду. После потери связи управление нужно включить заново.</footer>
+<button id="stop" class="stop" aria-label="СТОП: Wi-Fi и Bluetooth">СТОП</button><p id="note" class="note" role="status" aria-live="polite">Дождитесь готовности Arduino и возьмите управление.</p></section>
+</main><footer>Держите джойстик, чтобы ехать. Отпустите — робот получит нулевую команду. После потери связи управление нужно включить заново. СТОП действует на Wi-Fi и Bluetooth.</footer>
 </div>
 <script>
 'use strict';
@@ -52,13 +54,15 @@ const contacts = new Set();
 let authenticated = false, epoch = 0, authRequest = 0, socket = null, reconnectTimer = 0;
 let state = null, stateAt = 0, authorized = false, armPending = false, armAt = 0, seq = 0;
 let pointer = null, releaseNeeded = false, linear = 0, angular = 0;
-let frameToken = '', frameAt = 0, currentURL = '', frameAbort = null;
-let message = 'Сначала дождитесь видео и возьмите управление.';
+let frameToken = '', frameAt = 0, lastSeenToken = '', lastSeenAt = 0, currentURL = '', frameAbort = null;
+let message = 'Дождитесь готовности Arduino и возьмите управление.';
 const now = () => performance.now();
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-const freshVideo = () => !!frameToken && now() - frameAt < 500;
+const videoRequired = () => state?.camera_required !== false;
+const freshVideo = () => !!frameToken && now() - frameAt < (videoRequired() ? 500 : 5000);
 const freshState = () => socket?.readyState === WebSocket.OPEN && !!state && now() - stateAt < 300;
-const ready = () => freshState() && state.drive_ready && state.camera_fresh && freshVideo() && !document.hidden;
+const ready = () => freshState() && state.drive_ready &&
+  (!videoRequired() || (state.camera_fresh && freshVideo())) && !document.hidden;
 async function api(path, options = {}) {
   const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 5000);
   try { return await fetch(path, {credentials:'same-origin', cache:'no-store', ...options, signal:controller.signal}); }
@@ -79,7 +83,7 @@ function halt(reason, force = false, close = false) {
   disarmLocal(reason);
   if (socket?.readyState === WebSocket.OPEN) {
     if (socket.bufferedAmount > 1024) close = true;
-    else if (shouldStop) try { socket.send(JSON.stringify({type:'stop'})); } catch (_) { close = true; }
+    else if (shouldStop) try { socket.send(JSON.stringify({type:force ? 'stop' : 'release'})); } catch (_) { close = true; }
   }
   if (state) state = {...state, owner:false, armed:false};
   if (shouldStop || close) stateAt = -Infinity; // STOP invalidates the server's challenges.
@@ -94,7 +98,7 @@ function send(payload) {
 }
 function drive() {
   if (!authorized) return;
-  if (!ready() || !state.owner || !state.armed) { halt('Управление остановлено: нужны свежие видео и связь.'); return; }
+  if (!ready() || !state.owner || !state.armed) { halt('Wi-Fi управление отключено. Проверьте связь и состояние Arduino.'); return; }
   const speed = Number($('speed').value) / 100;
   send({type:'drive', challenge:state.challenge, frame:frameToken, seq:++seq,
         linear:pointer === null ? 0 : linear * speed, angular:pointer === null ? 0 : angular * speed});
@@ -106,7 +110,11 @@ function render() {
   $('arm').textContent = authorized ? 'Управление включено' : armPending ? 'Запрашиваем управление…' : 'Взять управление';
   $('stick').classList.toggle('ready', authorized && ready());
   $('videoCover').hidden = video; $('cameraStatus').textContent = video ? `Видео: кадр ${(Math.max(0,now()-frameAt)/1000).toFixed(1)} с` : 'Видео: ожидание';
-  $('driveStatus').textContent = state?.drive_ready ? 'Arduino: привод готов' : 'Arduino: привод заблокирован';
+  $('driveStatus').textContent = !connected ? 'Arduino: нет связи' : state.drive_source === 'bluetooth'
+    ? 'Управляет Bluetooth · Wi-Fi заблокирован' : state.drive_ready ? 'Arduino: Wi-Fi готов' : 'Arduino: ожидание готовности';
+  $('modeBanner').textContent = !state ? 'Проверка режима управления…' : videoRequired()
+    ? 'Режим с проверкой видео. При задержке кадров управление отключается.'
+    : 'Управление в прямой видимости — смотри на робота. Камера показывает предпросмотр; задержка видео не останавливает движение.';
   $('readout').textContent = `Тяга ${Math.round(linear*Number($('speed').value))}% · поворот ${Math.round(angular*Number($('speed').value))}%`;
   const note = releaseNeeded ? 'Отпустите пальцы, затем снова возьмите управление.' : message;
   if ($('note').textContent !== note) $('note').textContent = note;
@@ -122,11 +130,11 @@ function connect() {
     if (socket !== ws) return;
     let data; try { data = JSON.parse(event.data); } catch (_) { halt('Ошибка канала управления.', false, true); return; }
     if (data.type !== 'state') return;
-    if (typeof data.challenge !== 'string' || !data.challenge || !['owner','armed','drive_ready','camera_fresh'].every(key => typeof data[key] === 'boolean')) { halt('Ошибка состояния сервера.', false, true); return; }
+    if (typeof data.challenge !== 'string' || !data.challenge || !['owner','armed','drive_ready','camera_fresh','camera_required'].every(key => typeof data[key] === 'boolean')) { halt('Ошибка состояния сервера.', false, true); return; }
     state = data; stateAt = now();
     if (armPending && data.owner && data.armed && ready()) { authorized = true; armPending = false; message = 'Держите джойстик для движения. СТОП отключает управление.'; }
     if (authorized && !data.owner) disarmLocal(data.reason || 'Управление передано другому пульту.');
-    else if ((authorized || armPending) && !ready()) halt(data.reason || 'Нет свежего видео или готового привода.');
+    else if ((authorized || armPending) && !ready()) halt(data.reason || 'Нет готового привода или данных для выбранного режима.');
     else if (authorized && !data.armed) halt(data.reason || 'Управление отключено сервером.');
     else if (!authorized && !armPending) {
       if (data.owner) halt('Возьмите управление заново.');
@@ -143,14 +151,14 @@ function connect() {
 }
 function sessionStart() {
   if (authenticated) return;
-  authenticated = true; epoch++; $('login').hidden = true; $('dashboard').hidden = false; $('logout').hidden = false;
+  authenticated = true; epoch++; $('login').hidden = true; $('dashboard').hidden = false; $('logout').hidden = false; $('modeBanner').hidden = false;
   $('password').value = ''; $('password').blur(); connect(); render();
 }
 function sessionEnd(reason = 'Войдите, чтобы управлять роботом.') {
   authenticated = false; epoch++; clearTimeout(reconnectTimer); halt(reason, false, true); frameAbort?.abort();
-  frameToken = ''; frameAt = 0; $('camera').removeAttribute('src');
+  frameToken = lastSeenToken = ''; frameAt = lastSeenAt = 0; $('camera').removeAttribute('src');
   if (currentURL) URL.revokeObjectURL(currentURL); currentURL = '';
-  $('login').hidden = false; $('dashboard').hidden = true; $('logout').hidden = true; $('loginError').textContent = reason;
+  $('login').hidden = false; $('dashboard').hidden = true; $('logout').hidden = true; $('modeBanner').hidden = true; $('loginError').textContent = reason;
 }
 $('loginForm').addEventListener('submit', async event => {
   event.preventDefault(); if ($('loginButton').disabled || authenticated) return;
@@ -177,7 +185,9 @@ $('arm').onclick = () => {
   if (!send({type:'arm', challenge:state.challenge, frame:frameToken})) armPending = false;
   render();
 };
-$('stop').onclick = () => halt('Остановлено. Для движения снова возьмите управление.', true);
+$('stop').onclick = () => halt(socket?.readyState === WebSocket.OPEN
+  ? 'СТОП запрошен для Wi-Fi и Bluetooth. Перед новым движением отпустите кнопки.'
+  : 'Нет связи с Raspberry Pi: отправить СТОП не удалось.', true);
 $('speed').oninput = () => { $('speedValue').textContent = `${$('speed').value}%`; drive(); };
 window.addEventListener('pointerdown', event => {
   if (releaseNeeded && pointer === null && event.isPrimary) { contacts.clear(); releaseNeeded = false; }
@@ -220,7 +230,7 @@ document.addEventListener('visibilitychange', () => {
   else if (authenticated && (!socket || socket.readyState > WebSocket.OPEN)) connect();
 });
 setInterval(() => {
-  if ((authorized || armPending) && !ready()) halt('Нет свежего видео или связи. Управление отключено.');
+  if ((authorized || armPending) && !ready()) halt('Wi-Fi управление отключено. Проверьте связь и выбранный режим.');
   if (armPending && now()-armAt > 700) { armPending = false; message = 'Управление не получено. Возможно, пульт занят.'; }
   drive(); render();
 }, 50);
@@ -241,13 +251,14 @@ async function videoLoop() {
       if (!authenticated || epoch !== generation || document.hidden) throw new Error('Сессия изменена');
       $('camera').src = url; await $('camera').decode();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      if (!authenticated || epoch !== generation || document.hidden || now()-started >= 500) throw new Error('Кадр устарел');
+      if (!authenticated || epoch !== generation || document.hidden || now()-started >= (videoRequired() ? 500 : 1500)) throw new Error('Кадр устарел');
       const previous = currentURL; currentURL = url; url = '';
-      frameToken = token; frameAt = started; if (previous) URL.revokeObjectURL(previous);
+      if (token !== lastSeenToken) { lastSeenToken = token; lastSeenAt = started; }
+      frameToken = token; frameAt = lastSeenAt; if (previous) URL.revokeObjectURL(previous);
     } catch (_) {
       if (generation === epoch) {
         frameToken = ''; frameAt = 0;
-        if (authenticated && (authorized || armPending)) halt('Видео прервано. Дождитесь кадра и включите управление заново.');
+        if (authenticated && videoRequired() && (authorized || armPending)) halt('Видео прервано. Дождитесь кадра и включите управление заново.');
       }
     } finally { clearTimeout(timeout); if (url) URL.revokeObjectURL(url); frameAbort = null; }
     await delay(Math.max(0, 100-(now()-started)));

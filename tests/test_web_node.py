@@ -28,7 +28,7 @@ class Publisher:
 
 
 class WebHarness:
-    def __init__(self, view_only=False):
+    def __init__(self, view_only=False, camera_required=True):
         self.monotonic_now, self.ros_ns = 10.0, 100_000_000_000
         self.ros_ok, self.clock_calls, self.tokens = True, 0, 0
         self.publishers, self.subscriptions = [], []
@@ -39,7 +39,8 @@ class WebHarness:
                 self.name, self.parameters = name, {}
 
             def declare_parameter(self, name, default):
-                self.parameters[name] = view_only if name == "view_only" else default
+                overrides = {'view_only': view_only, 'camera_required': camera_required}
+                self.parameters[name] = overrides.get(name, default)
 
             def get_parameter(self, name):
                 return SimpleNamespace(value=self.parameters[name])
@@ -59,7 +60,8 @@ class WebHarness:
 
         namespace = dict(
             Node=Node, math=math, threading=threading, TwistStamped=TwistStamped,
-            Bool=object, CompressedImage=object, QoSProfile=SimpleNamespace,
+            Bool=object, Empty=object, String=object,
+            CompressedImage=object, QoSProfile=SimpleNamespace,
             ReliabilityPolicy=SimpleNamespace(BEST_EFFORT="best_effort"),
             time=SimpleNamespace(monotonic=lambda: self.monotonic_now),
             secrets=SimpleNamespace(token_urlsafe=self.new_token),
@@ -111,18 +113,44 @@ class WebNodeTests(unittest.TestCase):
         self.assertFalse(n.health()["drive_ready"])
         n.publish(.5, -.25)
         n.publish(0.0, 0.0)
+        n.emergency_stop()
         self.assertEqual(h.publishers, [])
         self.assertEqual(h.clock_calls, 0)
 
     def test_normal_mode_uses_only_strict_camera_topic_and_command_publisher(self):
         h = WebHarness()
         self.assertEqual([s.topic for s in h.subscriptions],
-                         ["drive/ready", "camera/image_raw/compressed"])
-        self.assertEqual([p.topic for p in h.publishers], ["cmd_vel"])
+                         ["drive/ready", "drive/source", "camera/image_raw/compressed"])
+        self.assertEqual([p.topic for p in h.publishers], ["cmd_vel", "drive/stop"])
         h.node.on_ready(SimpleNamespace(data=True))
         self.assertTrue(h.node.health()["drive_ready"])
         h.advance(.351)
         self.assertFalse(h.node.health()["drive_ready"])
+
+    def test_direct_sight_uses_preview_and_explicit_stop_has_own_topic(self):
+        h = WebHarness(camera_required=False)
+        self.assertEqual(h.subscriptions[-1].topic, 'camera/preview/compressed')
+        self.assertEqual(h.node.frame_max_age, 5.0)
+        h.node.publish(0.0, 0.0)
+        self.assertEqual(h.node.stop_pub.messages, [])
+        h.node.emergency_stop()
+        self.assertEqual(len(h.node.stop_pub.messages), 1)
+        self.assertEqual(len(h.node.pub.messages), 1)
+        h.ros_ok = False
+        h.node.emergency_stop()
+        self.assertEqual(len(h.node.stop_pub.messages), 1)
+
+    def test_bluetooth_source_blocks_ready_and_expires_as_disconnected(self):
+        h = WebHarness()
+        h.node.on_ready(SimpleNamespace(data=True))
+        h.node.on_source(SimpleNamespace(data='bluetooth'))
+        self.assertEqual(h.node.health()['drive_source'], 'bluetooth')
+        self.assertFalse(h.node.health()['drive_ready'])
+        h.node.on_source(SimpleNamespace(data='unknown'))
+        self.assertEqual(h.node.health()['drive_source'], 'bluetooth')
+        h.advance(.351)
+        self.assertEqual(h.node.health()['drive_source'], 'disconnected')
+        self.assertFalse(h.node.health()['drive_ready'])
 
     def test_view_frame_ttl_is_five_seconds_but_control_freshness_stays_strict(self):
         h = WebHarness(view_only=True)

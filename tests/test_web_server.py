@@ -15,9 +15,12 @@ class FakeIO:
     def __init__(self):
         self.ready = self.camera = self.video_ok = True
         self.outputs = []
+        self.source = 'idle'
+        self.emergency_stops = 0
 
     def health(self):
-        return {'drive_ready': self.ready, 'camera_fresh': self.camera}
+        return {'drive_ready': self.ready, 'camera_fresh': self.camera,
+                'drive_source': self.source}
 
     def frame(self):
         return (b'jpeg-test-bytes', 'frame-1') if self.camera else (None, '')
@@ -27,6 +30,9 @@ class FakeIO:
 
     def publish(self, linear, angular):
         self.outputs.append((linear, angular))
+
+    def emergency_stop(self):
+        self.emergency_stops += 1
 
 
 class WebTests(unittest.IsolatedAsyncioTestCase):
@@ -121,6 +127,63 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.gateway.control.armed)
         await ws.close()
 
+    async def test_direct_sight_accepts_control_without_camera(self):
+        self.gateway.camera_required = False
+        self.io.camera = self.io.video_ok = False
+        ws, state = await self.connect()
+        self.assertFalse(state['camera_required'])
+        self.assertFalse(state['camera_fresh'])
+        state = await self.arm(ws, state)
+        await ws.send_json(dict(type='drive', challenge=state['challenge'], frame='',
+                                seq=1, linear=.4, angular=.2))
+        await asyncio.sleep(.06)
+        self.assertIn((.4, .2), self.io.outputs)
+        self.io.ready = False
+        await asyncio.sleep(.06)
+        self.assertFalse(self.gateway.control.armed)
+        self.assertEqual(self.io.outputs[-1], (0, 0))
+        self.assertEqual(self.io.emergency_stops, 0)
+        await ws.close()
+
+    async def test_camera_required_still_blocks_missing_camera(self):
+        self.io.camera = False
+        ws, state = await self.connect()
+        self.assertTrue(state['camera_required'])
+        await ws.send_json(dict(type='arm', challenge=state['challenge'], frame='frame-1'))
+        await asyncio.sleep(.03)
+        self.assertFalse(self.gateway.control.armed)
+        await ws.close()
+
+    async def test_bluetooth_takeover_cancels_wifi_without_global_stop(self):
+        ws, state = await self.connect()
+        await self.arm(ws, state)
+        self.io.source = 'bluetooth'
+        await asyncio.sleep(.07)
+        self.assertFalse(self.gateway.control.armed)
+        await ws.send_json({'type': 'release'})
+        await asyncio.sleep(.03)
+        self.assertEqual(self.io.emergency_stops, 0)
+        await ws.send_json({'type': 'stop'})
+        await asyncio.sleep(.03)
+        self.assertEqual(self.io.emergency_stops, 1)
+        await ws.close()
+
+    async def test_nonowner_release_does_not_cancel_owner(self):
+        ws, state = await self.connect()
+        await self.arm(ws, state)
+        viewer = await self.client.ws_connect('/ws', headers={'Origin': self.origin})
+        await viewer.receive_json(timeout=1)
+        await viewer.send_json({'type': 'release'})
+        await asyncio.sleep(.03)
+        self.assertTrue(self.gateway.control.armed)
+        self.assertEqual(self.io.emergency_stops, 0)
+        await viewer.send_json({'type': 'stop'})
+        await asyncio.sleep(.03)
+        self.assertFalse(self.gateway.control.armed)
+        self.assertEqual(self.io.emergency_stops, 1)
+        await viewer.close()
+        await ws.close()
+
     async def test_view_only_serves_frames_but_rejects_arm_and_drive(self):
         # Simulate even a contradictory ready sensor: this mode still cannot arm.
         self.gateway.view_only = True
@@ -139,6 +202,9 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(self.io.outputs)
         self.assertTrue(all(command == (0, 0) for command in self.io.outputs))
         self.assertEqual(self.gateway.fault(), 'Режим просмотра: управление отключено')
+        await ws.send_json({'type': 'stop'})
+        await asyncio.sleep(.03)
+        self.assertEqual(self.io.emergency_stops, 0)
         await ws.close()
 
     async def test_logout_revokes_socket_and_control(self):

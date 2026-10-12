@@ -2,10 +2,10 @@
 camera:
   width: 640
   height: 480
-  fps: 15.0
+  fps: 30.0
   jpeg_quality: 70
 motor:
-  baud: 115200
+  baud: 9600
   usb_reset_wait_s: 2.0
   wheel_track_m: 0.18
   max_wheel_speed_mps: 0.40

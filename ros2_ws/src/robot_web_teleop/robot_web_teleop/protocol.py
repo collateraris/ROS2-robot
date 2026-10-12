@@ -1,10 +1,16 @@
 """Pure command gate, open-loop mixing and bounded ASCII/CRC serial protocol.
 
-115200 8N1. Request: M <uint32 seq> <signed left PWM> <signed right PWM>*<CRC4>\n
-Reply: A <same seq> <applied logical left PWM> <right PWM> <flags>*<CRC4>\n
+9600 8N1. Request: M <uint32 seq> <signed left PWM> <signed right PWM>*<CRC4>\n
+Explicit global stop: E <uint32 seq>*<CRC4>\n
+Reply: A <same seq> <applied left PWM> <right PWM> <flags>*<CRC4>\n
 CRC16-CCITT-FALSE: ASCII bytes before '*', poly=0x1021, init=0xFFFF, xorout=0.
-PWM is in [-140,140]. Flags: 1=locked, 2=watchdog event, 4=bad-frame event.
-Zero unlocks the MCU; historical event flags remain in that ACK and then clear.
+USB targets are in [-140,140]; ACK PWM may reach ±255 only with BT_ACTIVE.
+ACK values are logical USB PWM normally, electrical signed PWM during Bluetooth;
+Bluetooth forward signs must not be interpreted as ROS forward or odometry.
+Flags: 1=USB locked, 2=USB watchdog, 4=bad frame, 8=Bluetooth active,
+16=sticky Bluetooth handoff, 32=explicit emergency-stop event.
+M0 never interrupts Bluetooth. An inactive M0 clears the USB lock and reports
+sticky handoff before clearing it. E stops both and latches Bluetooth until S/D.
 No encoder feedback is present: acknowledged PWM is not measured wheel speed.
 """
 from dataclasses import dataclass
@@ -13,6 +19,9 @@ import re
 
 MAX_PWM, MAX_LINE = 140, 96
 BOOT_LOCK, WATCHDOG_EVENT, BAD_FRAME_EVENT = 1, 2, 4
+BT_ACTIVE, HANDOFF_EVENT, ESTOP_EVENT = 8, 16, 32
+KNOWN_FLAGS = BOOT_LOCK | WATCHDOG_EVENT | BAD_FRAME_EVENT | BT_ACTIVE | HANDOFF_EVENT | ESTOP_EVENT
+ACK_DEADLINE, ACK_FRESH, SEND_INTERVAL, RECOVERY_HOLD = .18, .30, .08, .50
 
 
 def crc16(data):
@@ -37,6 +46,12 @@ def encode_command(seq, left, right):
     return frame(f"M {seq} {left} {right}")
 
 
+def encode_emergency_stop(seq):
+    if type(seq) is not int or not 0 <= seq < 2**32:
+        raise ValueError("Sequence must be uint32")
+    return frame(f"E {seq}")
+
+
 @dataclass(frozen=True)
 class Ack:
     sequence: int
@@ -48,13 +63,14 @@ class Ack:
 def decode_ack(line):
     if not 1 <= len(line) <= MAX_LINE:
         raise ValueError("ACK line length out of bounds")
-    match = re.fullmatch(rb"(A ([0-9]{1,10}) (-?[0-9]{1,3}) (-?[0-9]{1,3}) ([0-7]))"
+    match = re.fullmatch(rb"(A ([0-9]{1,10}) (-?[0-9]{1,3}) (-?[0-9]{1,3}) ([0-9]{1,3}))"
                          rb"\*([0-9A-Fa-f]{4})\r?\n", line)
     if match is None or crc16(match[1]) != int(match[6], 16):
         raise ValueError("Malformed ACK or CRC mismatch")
     seq, left, right, flags = (int(match[i]) for i in range(2, 6))
-    if seq >= 2**32 or max(abs(left), abs(right)) > MAX_PWM:
-        raise ValueError("ACK sequence/PWM out of bounds")
+    limit = 255 if flags & BT_ACTIVE else MAX_PWM
+    if seq >= 2**32 or flags & ~KNOWN_FLAGS or max(abs(left), abs(right)) > limit:
+        raise ValueError("ACK sequence/PWM/flags out of bounds")
     return Ack(seq, left, right, flags)
 
 
