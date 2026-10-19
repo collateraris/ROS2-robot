@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-19",
+  "scope": "static parse and documentation; no ROS/WSL runtime",
+  "counts": {
+    ".py": 180,
+    ".yaml": 17,
+    ".xml": 11,
+    ".sdf": 7,
+    ".urdf": 1,
+    "active_markdown": 21,
+    "bash_documentation_blocks": 120
+  },
+  "errors": []
+}

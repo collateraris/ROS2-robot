@@ -1,0 +1,41 @@
+{
+  "synthetic": true,
+  "odometry_source": "synthetic",
+  "action_source": "synthetic_command",
+  "motion_target_is_ground_truth": false,
+  "split_sessions": {
+    "test": [
+      "SYNTHETIC_001"
+    ],
+    "val": [
+      "SYNTHETIC_000"
+    ],
+    "train": [
+      "SYNTHETIC_002",
+      "SYNTHETIC_003",
+      "SYNTHETIC_004",
+      "SYNTHETIC_005"
+    ]
+  },
+  "validation": {
+    "rows": 12,
+    "valid_comparison_sectors": 260,
+    "scan_rmse_m": 1.0771344502745566,
+    "persistence_scan_rmse_m": 0.01105533987521637,
+    "motion_m_rad_rmse": 0.026634337600611034,
+    "zero_motion_m_rad_rmse": 0.02417455493949782,
+    "kinematic_motion_m_rad_rmse": 0.00018414837398804626,
+    "ensemble_scan_std_sum_m": 6.198840141296387
+  },
+  "test": {
+    "rows": 12,
+    "valid_comparison_sectors": 264,
+    "scan_rmse_m": 1.0361872098121279,
+    "persistence_scan_rmse_m": 0.007216995202324821,
+    "motion_m_rad_rmse": 0.02863267936114689,
+    "zero_motion_m_rad_rmse": 0.023706936080511682,
+    "kinematic_motion_m_rad_rmse": 0.00011375872252312278,
+    "ensemble_scan_std_sum_m": 6.113181114196777
+  },
+  "note": "Ensemble disagreement is uncalibrated. RF2O targets share input lidar and are not independent motion truth."
+}

@@ -1,0 +1,17 @@
+uint16 schema_version
+string<=128 goal_id
+string<=16 controller
+roomwm_msgs/FrameRef frame
+string<=128 lease_id
+uint64 command_seq
+float64 linear_mps
+float64 angular_rps
+uint32 pulse_ms
+uint32 valid_for_ms
+float64 inference_ms
+bool abort
+bool model_uncertainty_valid
+float64 model_uncertainty
+string<=64 model_hash
+string<=256 reason
+roomwm_msgs/PerceptionState current_perception

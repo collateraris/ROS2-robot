@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- TF/visual companion to models/room_robot/model.sdf. No control plugins or odometry. -->
+<robot name="room_robot">
+  <material name="rubber"><color rgba=".04 .045 .05 1"/></material>
+  <material name="chassis_green"><color rgba=".18 .42 .22 1"/></material>
+  <material name="sensor_dark"><color rgba=".11 .12 .13 1"/></material>
+  <link name="base_link"><visual><origin xyz="0 0 .02"/><geometry><box size=".24 .17 .05"/></geometry><material name="chassis_green"/></visual><visual><origin xyz="0 0 .015"/><geometry><box size=".27 .25 .025"/></geometry><material name="sensor_dark"/></visual></link>
+    <!-- Fixed visualization only; Gazebo wheel articulation lives in SDF. -->
+  <link name="front_left_wheel"><visual><origin rpy="1.5707963267948966 0 0"/><geometry><cylinder radius="0.033" length="0.025"/></geometry><material name="rubber"/></visual></link>
+  <joint name="front_left_wheel_visual_joint" type="fixed"><parent link="base_link"/><child link="front_left_wheel"/><origin xyz="0.085 0.105 0"/></joint>  <!-- Fixed visualization only; Gazebo wheel articulation lives in SDF. -->
+  <link name="front_right_wheel"><visual><origin rpy="1.5707963267948966 0 0"/><geometry><cylinder radius="0.033" length="0.025"/></geometry><material name="rubber"/></visual></link>
+  <joint name="front_right_wheel_visual_joint" type="fixed"><parent link="base_link"/><child link="front_right_wheel"/><origin xyz="0.085 -0.105 0"/></joint>  <!-- Fixed visualization only; Gazebo wheel articulation lives in SDF. -->
+  <link name="rear_left_wheel"><visual><origin rpy="1.5707963267948966 0 0"/><geometry><cylinder radius="0.033" length="0.025"/></geometry><material name="rubber"/></visual></link>
+  <joint name="rear_left_wheel_visual_joint" type="fixed"><parent link="base_link"/><child link="rear_left_wheel"/><origin xyz="-0.085 0.105 0"/></joint>  <!-- Fixed visualization only; Gazebo wheel articulation lives in SDF. -->
+  <link name="rear_right_wheel"><visual><origin rpy="1.5707963267948966 0 0"/><geometry><cylinder radius="0.033" length="0.025"/></geometry><material name="rubber"/></visual></link>
+  <joint name="rear_right_wheel_visual_joint" type="fixed"><parent link="base_link"/><child link="rear_right_wheel"/><origin xyz="-0.085 -0.105 0"/></joint>
+  <link name="laser"><visual><origin xyz="0 0 -.018"/><geometry><cylinder radius=".026" length=".025"/></geometry><material name="sensor_dark"/></visual></link>
+  <joint name="laser_fixed_joint" type="fixed"><parent link="base_link"/><child link="laser"/><origin xyz=".035 0 .12"/></joint>
+  <link name="camera_link"><visual><geometry><box size=".025 .045 .025"/></geometry><material name="sensor_dark"/></visual></link>
+  <joint name="camera_fixed_joint" type="fixed"><parent link="base_link"/><child link="camera_link"/><origin xyz=".12 0 .10"/></joint>
+  <link name="camera_optical_frame"/>
+  <joint name="camera_optical_joint" type="fixed"><parent link="camera_link"/><child link="camera_optical_frame"/><origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/></joint>
+</robot>

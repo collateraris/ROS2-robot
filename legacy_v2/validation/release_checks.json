@@ -1,0 +1,44 @@
+{
+  "python_syntax": "compileall passed for modules, tests and launch",
+  "shell_syntax": "bash -n passed for all three scripts",
+  "package_xml": [
+    {
+      "name": "room_world_model",
+      "version": "0.2.0",
+      "build_type": "ament_python"
+    },
+    {
+      "name": "roomwm_msgs",
+      "version": "0.2.0",
+      "build_type": "ament_cmake"
+    }
+  ],
+  "colcon_discovery": {
+    "command": "python3 -c 'from colcon_core.command import main; raise SystemExit(main())' list --paths . ros2/roomwm_msgs",
+    "packages": [
+      "room_world_model (ros.ament_python)",
+      "roomwm_msgs (ros.ament_cmake)"
+    ],
+    "actual_ros_build": false
+  },
+  "interfaces": {
+    "messages": 11,
+    "actions": 1,
+    "cmake_registration_and_type_dependency_closure": "passed",
+    "rosidl_generation_executed": false
+  },
+  "defaults": {
+    "motion_permissions_enabled": false,
+    "geometry_accepted": false,
+    "camera_timing_accepted": false
+  },
+  "scope": "Static and host-side checks only; no ROS/DDS or robot validation.",
+  "markdown_local_links": {
+    "checked": 57,
+    "broken": 0
+  },
+  "documentation_shell_blocks": {
+    "checked": 74,
+    "syntax_errors": 0
+  }
+}

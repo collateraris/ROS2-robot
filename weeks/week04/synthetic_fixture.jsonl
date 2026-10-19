@@ -1,0 +1,198 @@
+{"episode_id": "fixture_rules", "event": "episode_start", "scene_id": "dev_000", "split": "dev", "task": {"id": "approach_person", "command": "подъедь к человеку", "target_id": "person_proxy", "goal": {"x": 1.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}, "timeout_sim_s": 150.0, "criteria": {"kind": "standoff", "target": {"x": 2.5444999999999998, "y": 1.787}, "standoff_m": 1.0, "distance_tolerance_m": 0.25, "yaw_tolerance_rad": 0.4}}, "method": "rules", "source": "synthetic_fixture", "sim_time": 0.0, "wall_time": 1000.0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 0.0, "wall_time": 1000.0, "x": 0.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 0.0, "wall_time": 1000.0, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.0, "wall_time": 1000.0, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 0.2, "wall_time": 1000.2, "x": 0.7823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 0.2, "wall_time": 1000.2, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.2, "wall_time": 1000.2, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 0.4, "wall_time": 1000.4, "x": 0.8323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 0.4, "wall_time": 1000.4, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.4, "wall_time": 1000.4, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 0.6000000000000001, "wall_time": 1000.6, "x": 0.8823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 0.6000000000000001, "wall_time": 1000.6, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.6000000000000001, "wall_time": 1000.6, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 0.8, "wall_time": 1000.8, "x": 0.9323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 0.8, "wall_time": 1000.8, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.8, "wall_time": 1000.8, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 1.0, "wall_time": 1001.0, "x": 0.9823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 1.0, "wall_time": 1001.0, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.0, "wall_time": 1001.0, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 1.2000000000000002, "wall_time": 1001.2, "x": 1.0323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 1.2000000000000002, "wall_time": 1001.2, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.2000000000000002, "wall_time": 1001.2, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 1.4000000000000001, "wall_time": 1001.4, "x": 1.0823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 1.4000000000000001, "wall_time": 1001.4, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.4000000000000001, "wall_time": 1001.4, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 1.6, "wall_time": 1001.6, "x": 1.1323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 1.6, "wall_time": 1001.6, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.6, "wall_time": 1001.6, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 1.8, "wall_time": 1001.8, "x": 1.1823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 1.8, "wall_time": 1001.8, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.8, "wall_time": 1001.8, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 2.0, "wall_time": 1002.0, "x": 1.2323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 2.0, "wall_time": 1002.0, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.0, "wall_time": 1002.0, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 2.2, "wall_time": 1002.2, "x": 1.2823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 2.2, "wall_time": 1002.2, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.2, "wall_time": 1002.2, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 2.4000000000000004, "wall_time": 1002.4, "x": 1.3323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 2.4000000000000004, "wall_time": 1002.4, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.4000000000000004, "wall_time": 1002.4, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 2.6, "wall_time": 1002.6, "x": 1.3823293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 2.6, "wall_time": 1002.6, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.6, "wall_time": 1002.6, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 2.8000000000000003, "wall_time": 1002.8, "x": 1.4323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 2.8000000000000003, "wall_time": 1002.8, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.8000000000000003, "wall_time": 1002.8, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 3.0, "wall_time": 1003.0, "x": 1.4823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 3.0, "wall_time": 1003.0, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.0, "wall_time": 1003.0, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 3.2, "wall_time": 1003.2, "x": 1.5323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 3.2, "wall_time": 1003.2, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.2, "wall_time": 1003.2, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 3.4000000000000004, "wall_time": 1003.4, "x": 1.5823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 3.4000000000000004, "wall_time": 1003.4, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.4000000000000004, "wall_time": 1003.4, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 3.6, "wall_time": 1003.6, "x": 1.6323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 3.6, "wall_time": 1003.6, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.6, "wall_time": 1003.6, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 3.8000000000000003, "wall_time": 1003.8, "x": 1.6823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 3.8000000000000003, "wall_time": 1003.8, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.8000000000000003, "wall_time": 1003.8, "count": 0}
+{"episode_id": "fixture_rules", "event": "pose", "sim_time": 4.0, "wall_time": 1004.0, "x": 1.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_rules", "event": "scan", "sim_time": 4.0, "wall_time": 1004.0, "clearance_m": 0.42}
+{"episode_id": "fixture_rules", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 4.0, "wall_time": 1004.0, "count": 0}
+{"episode_id": "fixture_rules", "event": "task_result", "status": "succeeded", "sim_time": 4.0, "wall_time": 1004.0}
+{"episode_id": "fixture_rules", "event": "episode_end", "reason": "task_finished", "sim_time": 4.0, "wall_time": 1004.0}
+{"episode_id": "fixture_llm", "event": "episode_start", "scene_id": "dev_000", "split": "dev", "task": {"id": "approach_person", "command": "подъедь к человеку", "target_id": "person_proxy", "goal": {"x": 1.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}, "timeout_sim_s": 150.0, "criteria": {"kind": "standoff", "target": {"x": 2.5444999999999998, "y": 1.787}, "standoff_m": 1.0, "distance_tolerance_m": 0.25, "yaw_tolerance_rad": 0.4}}, "method": "llm", "source": "synthetic_fixture", "sim_time": 0.0, "wall_time": 1000.0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 0.0, "wall_time": 1000.0, "x": 1.5323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 0.0, "wall_time": 1000.0, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.0, "wall_time": 1000.0, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 0.2, "wall_time": 1000.2, "x": 1.5823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 0.2, "wall_time": 1000.2, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.2, "wall_time": 1000.2, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 0.4, "wall_time": 1000.4, "x": 1.6323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 0.4, "wall_time": 1000.4, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.4, "wall_time": 1000.4, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 0.6000000000000001, "wall_time": 1000.6, "x": 1.6823293490581026, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 0.6000000000000001, "wall_time": 1000.6, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.6000000000000001, "wall_time": 1000.6, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 0.8, "wall_time": 1000.8, "x": 1.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 0.8, "wall_time": 1000.8, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.8, "wall_time": 1000.8, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 1.0, "wall_time": 1001.0, "x": 1.7823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 1.0, "wall_time": 1001.0, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.0, "wall_time": 1001.0, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 1.2000000000000002, "wall_time": 1001.2, "x": 1.8323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 1.2000000000000002, "wall_time": 1001.2, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.2000000000000002, "wall_time": 1001.2, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 1.4000000000000001, "wall_time": 1001.4, "x": 1.8823293490581026, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 1.4000000000000001, "wall_time": 1001.4, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.4000000000000001, "wall_time": 1001.4, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 1.6, "wall_time": 1001.6, "x": 1.9323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 1.6, "wall_time": 1001.6, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.6, "wall_time": 1001.6, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 1.8, "wall_time": 1001.8, "x": 1.9823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 1.8, "wall_time": 1001.8, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.8, "wall_time": 1001.8, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 2.0, "wall_time": 1002.0, "x": 2.0323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 2.0, "wall_time": 1002.0, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.0, "wall_time": 1002.0, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 2.2, "wall_time": 1002.2, "x": 2.0823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 2.2, "wall_time": 1002.2, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.2, "wall_time": 1002.2, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 2.4000000000000004, "wall_time": 1002.4, "x": 2.132329349058103, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 2.4000000000000004, "wall_time": 1002.4, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.4000000000000004, "wall_time": 1002.4, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 2.6, "wall_time": 1002.6, "x": 2.1823293490581026, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 2.6, "wall_time": 1002.6, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.6, "wall_time": 1002.6, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 2.8000000000000003, "wall_time": 1002.8, "x": 2.2323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 2.8000000000000003, "wall_time": 1002.8, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.8000000000000003, "wall_time": 1002.8, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 3.0, "wall_time": 1003.0, "x": 2.2823293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 3.0, "wall_time": 1003.0, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.0, "wall_time": 1003.0, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 3.2, "wall_time": 1003.2, "x": 2.3323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 3.2, "wall_time": 1003.2, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.2, "wall_time": 1003.2, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 3.4000000000000004, "wall_time": 1003.4, "x": 2.382329349058103, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 3.4000000000000004, "wall_time": 1003.4, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.4000000000000004, "wall_time": 1003.4, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 3.6, "wall_time": 1003.6, "x": 2.4323293490581026, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 3.6, "wall_time": 1003.6, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.6, "wall_time": 1003.6, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 3.8000000000000003, "wall_time": 1003.8, "x": 2.4823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 3.8000000000000003, "wall_time": 1003.8, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.8000000000000003, "wall_time": 1003.8, "count": 0}
+{"episode_id": "fixture_llm", "event": "pose", "sim_time": 4.0, "wall_time": 1004.0, "x": 2.5323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_llm", "event": "scan", "sim_time": 4.0, "wall_time": 1004.0, "clearance_m": 0.42}
+{"episode_id": "fixture_llm", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 4.0, "wall_time": 1004.0, "count": 0}
+{"episode_id": "fixture_llm", "event": "task_result", "status": "succeeded", "sim_time": 4.0, "wall_time": 1004.0}
+{"episode_id": "fixture_llm", "event": "episode_end", "reason": "task_finished", "sim_time": 4.0, "wall_time": 1004.0}
+{"episode_id": "fixture_oracle_goal", "event": "episode_start", "scene_id": "dev_000", "split": "dev", "task": {"id": "approach_person", "command": "подъедь к человеку", "target_id": "person_proxy", "goal": {"x": 1.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}, "timeout_sim_s": 150.0, "criteria": {"kind": "standoff", "target": {"x": 2.5444999999999998, "y": 1.787}, "standoff_m": 1.0, "distance_tolerance_m": 0.25, "yaw_tolerance_rad": 0.4}}, "method": "oracle_goal", "source": "synthetic_fixture", "sim_time": 0.0, "wall_time": 1000.0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 0.0, "wall_time": 1000.0, "x": 0.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 0.0, "wall_time": 1000.0, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.0, "wall_time": 1000.0, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 0.2, "wall_time": 1000.2, "x": 0.7823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 0.2, "wall_time": 1000.2, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.2, "wall_time": 1000.2, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 0.4, "wall_time": 1000.4, "x": 0.8323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 0.4, "wall_time": 1000.4, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.4, "wall_time": 1000.4, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 0.6000000000000001, "wall_time": 1000.6, "x": 0.8823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 0.6000000000000001, "wall_time": 1000.6, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.6000000000000001, "wall_time": 1000.6, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 0.8, "wall_time": 1000.8, "x": 0.9323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 0.8, "wall_time": 1000.8, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 0.8, "wall_time": 1000.8, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 1.0, "wall_time": 1001.0, "x": 0.9823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 1.0, "wall_time": 1001.0, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.0, "wall_time": 1001.0, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 1.2000000000000002, "wall_time": 1001.2, "x": 1.0323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 1.2000000000000002, "wall_time": 1001.2, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.2000000000000002, "wall_time": 1001.2, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 1.4000000000000001, "wall_time": 1001.4, "x": 1.0823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 1.4000000000000001, "wall_time": 1001.4, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.4000000000000001, "wall_time": 1001.4, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 1.6, "wall_time": 1001.6, "x": 1.1323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 1.6, "wall_time": 1001.6, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.6, "wall_time": 1001.6, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 1.8, "wall_time": 1001.8, "x": 1.1823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 1.8, "wall_time": 1001.8, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 1.8, "wall_time": 1001.8, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 2.0, "wall_time": 1002.0, "x": 1.2323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 2.0, "wall_time": 1002.0, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.0, "wall_time": 1002.0, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 2.2, "wall_time": 1002.2, "x": 1.2823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 2.2, "wall_time": 1002.2, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.2, "wall_time": 1002.2, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 2.4000000000000004, "wall_time": 1002.4, "x": 1.3323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 2.4000000000000004, "wall_time": 1002.4, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.4000000000000004, "wall_time": 1002.4, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 2.6, "wall_time": 1002.6, "x": 1.3823293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 2.6, "wall_time": 1002.6, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.6, "wall_time": 1002.6, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 2.8000000000000003, "wall_time": 1002.8, "x": 1.4323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 2.8000000000000003, "wall_time": 1002.8, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 2.8000000000000003, "wall_time": 1002.8, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 3.0, "wall_time": 1003.0, "x": 1.4823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 3.0, "wall_time": 1003.0, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.0, "wall_time": 1003.0, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 3.2, "wall_time": 1003.2, "x": 1.5323293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 3.2, "wall_time": 1003.2, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.2, "wall_time": 1003.2, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 3.4000000000000004, "wall_time": 1003.4, "x": 1.5823293490581025, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 3.4000000000000004, "wall_time": 1003.4, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.4000000000000004, "wall_time": 1003.4, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 3.6, "wall_time": 1003.6, "x": 1.6323293490581023, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 3.6, "wall_time": 1003.6, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.6, "wall_time": 1003.6, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 3.8000000000000003, "wall_time": 1003.8, "x": 1.6823293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 3.8000000000000003, "wall_time": 1003.8, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 3.8000000000000003, "wall_time": 1003.8, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "pose", "sim_time": 4.0, "wall_time": 1004.0, "x": 1.7323293490581024, "y": 1.2035800536932122, "yaw": 0.622933225138744}
+{"episode_id": "fixture_oracle_goal", "event": "scan", "sim_time": 4.0, "wall_time": 1004.0, "clearance_m": 0.42}
+{"episode_id": "fixture_oracle_goal", "event": "contact_sample", "source": "gazebo_contact", "synthetic": true, "sim_time": 4.0, "wall_time": 1004.0, "count": 0}
+{"episode_id": "fixture_oracle_goal", "event": "task_result", "status": "succeeded", "sim_time": 4.0, "wall_time": 1004.0}
+{"episode_id": "fixture_oracle_goal", "event": "episode_end", "reason": "task_finished", "sim_time": 4.0, "wall_time": 1004.0}

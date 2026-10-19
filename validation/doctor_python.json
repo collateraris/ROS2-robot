@@ -1,0 +1,60 @@
+{
+  "checks": [
+    {
+      "name": "Python3.12",
+      "ok": true,
+      "detail": "3.12.14"
+    },
+    {
+      "name": "numpy",
+      "ok": true,
+      "detail": "2.3.5"
+    },
+    {
+      "name": "yaml",
+      "ok": true,
+      "detail": "6.0.3"
+    },
+    {
+      "name": "PIL",
+      "ok": true,
+      "detail": "12.3.0"
+    },
+    {
+      "name": "room_semantics",
+      "ok": true,
+      "detail": "0.5.0"
+    },
+    {
+      "name": "room_planning",
+      "ok": true,
+      "detail": "importable"
+    },
+    {
+      "name": "room_evaluation",
+      "ok": true,
+      "detail": "importable"
+    },
+    {
+      "name": "torch",
+      "ok": true,
+      "detail": "2.14.1+cpu"
+    },
+    {
+      "name": "CUDA availability (CPU is allowed)",
+      "ok": true,
+      "detail": "False"
+    },
+    {
+      "name": "transformers",
+      "ok": true,
+      "detail": "4.52.3"
+    },
+    {
+      "name": "Transformers pinned4.52.3",
+      "ok": true,
+      "detail": "4.52.3"
+    }
+  ],
+  "ready": true
+}

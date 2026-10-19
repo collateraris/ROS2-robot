@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "example_only": true,
+  "instructions": "Unfilled example. Never set reviewed=true before checking actual held-out REAL ROBOT measurements. This file is rejected as supplied and cannot authorize motors. See docs/WORLD_MODEL_RU.md and docs/MIGRATION_V2_RU.md.",
+  "domain": "real_robot",
+  "reviewed": false,
+  "reviewer": "",
+  "reviewed_utc": "",
+  "checkpoint_sha256": "REPLACE_WITH_ACTUAL_CHECKPOINT_SHA256",
+  "calibration_fingerprint": "REPLACE_WITH_ACTUAL_CALIBRATION_FINGERPRINT",
+  "action_ablation": {
+    "domain": "real_robot",
+    "evidence_id": "REPLACE_WITH_REVIEWED_REAL_HELD_OUT_REPORT_ID",
+    "held_out": false,
+    "common_valid_label_mask": false,
+    "actual_action_aux_mae": null,
+    "zero_action_aux_mae": null,
+    "shuffled_action_aux_mae": null,
+    "persistence_aux_mae": null
+  }
+}

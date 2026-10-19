@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "source": "pretrained_grounding_dino",
+  "image": "coco_sample.png",
+  "model_id": "IDEA-Research/grounding-dino-tiny",
+  "requested_revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+  "resolved_revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+  "inference_seconds": 9.170638671000233,
+  "image_size": [
+    640,
+    480
+  ],
+  "detections": [
+    {
+      "label": "cat",
+      "score": 0.8809365034103394,
+      "bbox_xyxy": [
+        9.493017196655273,
+        54.34239959716797,
+        316.43817138671875,
+        474.76873779296875
+      ]
+    },
+    {
+      "label": "cat",
+      "score": 0.8640567064285278,
+      "bbox_xyxy": [
+        346.0197448730469,
+        24.148250579833984,
+        639.5391845703125,
+        372.7546691894531
+      ]
+    },
+    {
+      "label": "remote",
+      "score": 0.7428111433982849,
+      "bbox_xyxy": [
+        40.79393005371094,
+        73.45305633544922,
+        175.6466827392578,
+        117.28497314453125
+      ]
+    },
+    {
+      "label": "remote",
+      "score": 0.649408757686615,
+      "bbox_xyxy": [
+        333.7324523925781,
+        76.88372039794922,
+        370.40673828125,
+        186.523193359375
+      ]
+    }
+  ],
+  "metric_localization": false,
+  "note": "An empty result is valid; this smoke is not a detection-quality benchmark.",
+  "image_source": "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png",
+  "device": "cpu",
+  "benchmark_scope": "single pretrained inference API smoke; not robotic semantic localization or live latency qualification"
+}

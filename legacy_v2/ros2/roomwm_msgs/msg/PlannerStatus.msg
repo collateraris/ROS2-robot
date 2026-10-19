@@ -1,0 +1,9 @@
+uint16 schema_version
+string<=128 goal_id
+string<=16 controller
+string<=256 reason
+float64 inference_ms
+roomwm_msgs/PerceptionState current_perception
+uint32 filter_steps
+bool model_uncertainty_valid
+float64 model_uncertainty

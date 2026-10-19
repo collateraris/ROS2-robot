@@ -1,0 +1,15 @@
+{
+  "scope": "static source parse and active documentation; no runtime execution of installation commands",
+  "counts": {
+    ".py": 178,
+    ".yaml": 17,
+    ".yml": 0,
+    ".xml": 11,
+    ".sdf": 7,
+    ".urdf": 1,
+    "active_markdown": 20,
+    "local_links": 34,
+    "bash_documentation_blocks": 90
+  },
+  "errors": []
+}

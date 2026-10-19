@@ -1,0 +1,110 @@
+[
+  {
+    "command": [
+      "python",
+      "-m",
+      "learning_nav.synthetic",
+      "--out",
+      "<temporary-smoke-directory>/data",
+      "--sessions",
+      "6",
+      "--rows",
+      "12"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "-m",
+      "learning_nav.train_world",
+      "--data",
+      "<temporary-smoke-directory>/data/session_000.npz",
+      "<temporary-smoke-directory>/data/session_001.npz",
+      "<temporary-smoke-directory>/data/session_002.npz",
+      "<temporary-smoke-directory>/data/session_003.npz",
+      "<temporary-smoke-directory>/data/session_004.npz",
+      "<temporary-smoke-directory>/data/session_005.npz",
+      "--meta",
+      "<temporary-smoke-directory>/data/metadata.json",
+      "--out",
+      "<temporary-smoke-directory>/world",
+      "--epochs",
+      "1",
+      "--batch-size",
+      "12",
+      "--device",
+      "cpu",
+      "--members",
+      "2"
+    ],
+    "returncode": 0,
+    "stdout": "member=0 epoch=1 validation_score=0.251317\nmember=1 epoch=1 validation_score=0.239885\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "-m",
+      "learning_nav.infer",
+      "--checkpoint",
+      "<temporary-smoke-directory>/world/world.pt",
+      "--meta",
+      "<temporary-smoke-directory>/data/metadata.json",
+      "--data",
+      "<temporary-smoke-directory>/data/session_000.npz",
+      "--device",
+      "cpu"
+    ],
+    "returncode": 0,
+    "stdout": "{\n  \"kind\": \"world_shadow\",\n  \"predicted_lidar_m\": [\n    2.5186564922332764,\n    2.575376033782959,\n    2.473109006881714,\n    2.4995436668395996,\n    2.5204415321350098,\n    2.4611692428588867,\n    2.556063652038574,\n    2.481144905090332,\n    2.478968620300293,\n    2.4835288524627686,\n    2.4500105381011963,\n    2.497518539428711,\n    2.4963645935058594,\n    2.484070062637329,\n    2.5160229206085205,\n    2.499241590499878,\n    2.5639986991882324,\n    2.6093101501464844,\n    2.5611209869384766,\n    2.5522608757019043,\n    2.5319981575012207,\n    2.5347509384155273,\n    2.5476837158203125,\n    2.6134228706359863\n  ],\n  \"current_observed_mask\": [\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    true,\n    false,\n    true\n  ],\n  \"ensemble_lidar_std_m\": [\n    0.06280817091464996,\n    0.0032363831996917725,\n    0.04596315324306488,\n    0.06426326930522919,\n    0.005328655242919922,\n    0.025311261415481567,\n    0.010492950677871704,\n    0.0029245764017105103,\n    0.017277374863624573,\n    0.014822408556938171,\n    0.009877979755401611,\n    0.005056634545326233,\n    0.016047954559326172,\n    0.016627386212348938,\n    0.03626033663749695,\n    0.016393736004829407,\n    0.04649236798286438,\n    0.04655614495277405,\n    0.025587230920791626,\n    0.03593429923057556,\n    8.791685104370117e-06,\n    0.012746751308441162,\n    0.002528280019760132,\n    0.018379241228103638\n  ],\n  \"predicted_body_dx_dy_dyaw\": [\n    -0.0062245894223451614,\n    -0.02712276577949524,\n    -0.02261122688651085\n  ],\n  \"odometry_source\": \"synthetic\",\n  \"action_source\": \"synthetic_command\",\n  \"motion_target_is_ground_truth\": false,\n  \"max_observed_std_m\": 0.06426326930522919,\n  \"uncertain\": false,\n  \"actuation\": false,\n  \"calibrated\": false,\n  \"note\": \"Predictions for currently unobserved sectors are unverified; RF2O motion targets share lidar observations and are not independent ground truth.\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "-m",
+      "learning_nav.train_vla",
+      "--data",
+      "<temporary-smoke-directory>/data/session_000.npz",
+      "<temporary-smoke-directory>/data/session_001.npz",
+      "<temporary-smoke-directory>/data/session_002.npz",
+      "<temporary-smoke-directory>/data/session_003.npz",
+      "<temporary-smoke-directory>/data/session_004.npz",
+      "<temporary-smoke-directory>/data/session_005.npz",
+      "--meta",
+      "<temporary-smoke-directory>/data/metadata.json",
+      "--out",
+      "<temporary-smoke-directory>/vla",
+      "--epochs",
+      "1",
+      "--batch-size",
+      "12",
+      "--device",
+      "cpu"
+    ],
+    "returncode": 0,
+    "stdout": "epoch=1 validation_balanced_accuracy=0.5833\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "-m",
+      "learning_nav.infer",
+      "--checkpoint",
+      "<temporary-smoke-directory>/vla/vla.pt",
+      "--meta",
+      "<temporary-smoke-directory>/data/metadata.json",
+      "--data",
+      "<temporary-smoke-directory>/data/session_000.npz",
+      "--device",
+      "cpu"
+    ],
+    "returncode": 0,
+    "stdout": "{\n  \"kind\": \"finite_vla_shadow\",\n  \"predicted_waypoint\": \"home\",\n  \"confidence\": 0.35369041562080383,\n  \"proposal\": \"ABSTAIN\",\n  \"stop_proposal\": false,\n  \"actuation\": false,\n  \"calibrated\": false\n}\n",
+    "stderr": ""
+  }
+]

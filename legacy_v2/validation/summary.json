@@ -1,0 +1,73 @@
+{
+  "release": "room_world_model_ros2_v2",
+  "date_utc": "2026-10-12T20:09:41.562041+00:00",
+  "unit_and_integration": {
+    "tests": 353,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 4.627,
+    "command": "python -m pytest -q --junitxml=validation/pytest.xml"
+  },
+  "synthetic_smoke": {
+    "pipeline_executed": true,
+    "synthetic_live_gate_rejected": true,
+    "real_robot_acceptance": false,
+    "offline_diagnostics": {
+      "pixel_mse_improvement_vs_persistence": -0.04202367438483634,
+      "relative_pixel_mse_improvement_vs_persistence": -281.2300408523666,
+      "zero_minus_actual_pixel_mse": -1.2417634330519345e-08,
+      "permuted_minus_actual_pixel_mse": -1.862645149230957e-09,
+      "zero_actions_minus_actual_aux_mae": -0.00010651970903080565,
+      "permuted_actions_minus_actual_aux_mae": -1.966332395875181e-05,
+      "persistence_minus_actual_aux_mae": -0.2798996915419897
+    },
+    "toy_controller_comparison": {
+      "reactive": {
+        "success_rate": 0.25,
+        "trials": 4,
+        "minimum_clearance_m": 0.3697557202807249,
+        "collisions": 0,
+        "interventions": 0,
+        "median_success_task_time_s": 49.679999999998486,
+        "mean_zero_action_steps": 31.5
+      },
+      "wm_mpc": {
+        "success_rate": 0.0,
+        "trials": 4,
+        "minimum_clearance_m": 0.6911411416205809,
+        "collisions": 0,
+        "interventions": 0,
+        "median_success_task_time_s": null,
+        "mean_zero_action_steps": 64.0
+      }
+    },
+    "interpretation": "A completed smoke run verifies executable code paths only. Negative gains and failed tasks are recorded as failures of model utility, not hidden. This tiny model is not an autonomy policy for a physical robot.",
+    "reproduce": "python -m room_world_model.smoke --output runs/smoke_v2",
+    "weights_in_release": false,
+    "training": {
+      "epochs": 2,
+      "latent_dim": 16,
+      "hidden_dim": 24,
+      "ensemble_size": 2,
+      "train_batches_per_epoch": 2,
+      "validation_batches": 1
+    }
+  },
+  "additional_checks": [
+    "Python compileall for modules/tests/launch",
+    "bash -n for shell scripts",
+    "colcon explicit-path discovery of both ROS packages",
+    "ROS interface registration/dependency closure",
+    "Markdown local links",
+    "release manifest and ZIP CRC"
+  ],
+  "not_tested": [
+    "ROS 2 Jazzy build/ROSIDL/DDS/executor",
+    "pretrained perception or CUDA",
+    "real V4L2 device and optical timing",
+    "AVR target/physical MCU timing",
+    "physical speed/braking/wiring",
+    "real-room navigation and paired real trials"
+  ]
+}

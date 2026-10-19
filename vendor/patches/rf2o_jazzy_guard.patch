@@ -1,0 +1,423 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d3d37fd..ea51890 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -57,12 +57,14 @@ set(DEPENDENCIES
+ 
+ ##target_include_directories(${PROJECT_NAME} PUBLIC ${Eigen3_INCLUDE_DIRS})
+ ament_target_dependencies(${EXECUTABLE_NAME} ${DEPENDENCIES})
++target_link_libraries(${EXECUTABLE_NAME} Eigen3::Eigen)
+ 
+ ## Declare a cpp library
+ add_library(${PROJECT_NAME} src/CLaserOdometry2D.cpp)
+ 
+ ## Declare a cpp executable
+ ament_target_dependencies(${PROJECT_NAME} ${DEPENDENCIES})
++target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
+ 
+ install(TARGETS ${EXECUTABLE_NAME}
+   DESTINATION lib/${PROJECT_NAME})
+diff --git a/include/rf2o_laser_odometry/CLaserOdometry2DNode.hpp b/include/rf2o_laser_odometry/CLaserOdometry2DNode.hpp
+index 8a1e170..18a934b 100644
+--- a/include/rf2o_laser_odometry/CLaserOdometry2DNode.hpp
++++ b/include/rf2o_laser_odometry/CLaserOdometry2DNode.hpp
+@@ -1,13 +1,13 @@
+ #include "rf2o_laser_odometry/CLaserOdometry2D.hpp"
+ 
+-#include <tf2/convert.h>
+-#include <tf2/exceptions.h>
+-#include <tf2_ros/transform_broadcaster.h>
+-#include <tf2_ros/transform_listener.h>
+-#include <tf2_ros/buffer.h>
+-#include <tf2/impl/utils.h>
++#include <tf2/convert.hpp>
++#include <tf2/exceptions.hpp>
++#include <tf2_ros/transform_broadcaster.hpp>
++#include <tf2_ros/transform_listener.hpp>
++#include <tf2_ros/buffer.hpp>
++#include <tf2/impl/utils.hpp>
+ #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+-#include <tf2/utils.h>
++#include <tf2/utils.hpp>
+ 
+ namespace rf2o {
+ 
+@@ -23,7 +23,8 @@ public:
+   // Params & vars
+   CLaserOdometry2D    rf2o_ref;
+   bool                publish_tf, new_scan_available;
+-  double              freq;
++  double              freq, max_scan_age, max_scan_gap, min_valid_ratio;
++  bool                fault_latched;
+   std::string         laser_scan_topic;
+   std::string         odom_topic;
+   std::string         base_frame_id;
+diff --git a/package.xml b/package.xml
+index 5ae9ec7..8265d95 100644
+--- a/package.xml
++++ b/package.xml
+@@ -1,40 +1,17 @@
+ <?xml version="1.0"?>
+-<package>
++<package format="3">
+   <name>rf2o_laser_odometry</name>
+   <version>0.1.0</version>
+-  <description>
+-    Estimation of 2D odometry based on planar laser scans. Useful for mobile robots with innacurate base odometry.
+-    For full description of the algorithm, please refer to:
+-    Planar Odometry from a Radial Laser Scanner. A Range Flow-based Approach. ICRA 2016
+-    Available at: http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/papers/217
+-  </description>
+-
++  <description>RF2O range-flow laser odometry, upstream ros2 source with room-robot robustness patch.</description>
+   <maintainer email="jgmonroy@uma.es">Javier G. Monroy</maintainer>
+-  <author email="marianojt@uma.es"> Mariano Jaimez</author>
+-  <author email="jgmonroy@uma.es"> Javier G. Monroy</author>
+-  <license>GPL v3</license> 
+-
++  <author email="marianojt@uma.es">Mariano Jaimez</author>
++  <author email="jgmonroy@uma.es">Javier G. Monroy</author>
++  <license>GPL-3.0</license>
+   <buildtool_depend>ament_cmake</buildtool_depend>
+-  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
+-  <build_depend>geometry_msgs</build_depend>
+-  <build_depend>rclcpp</build_depend>
+-  <build_depend>std_msgs</build_depend>
+-  <build_depend>tf2</build_depend>
+-  <build_depend>tf2_ros</build_depend>  
+-  <build_depend>eigen</build_depend>
+-  <build_depend>cmake_modules</build_depend>
+-  <build_depend>sensor_msgs</build_depend>
+-  <build_depend>tf2_geometry_msgs</build_depend>
+-  <run_depend>geometry_msgs</run_depend>
+-  <run_depend>rclcpp</run_depend>
+-  <run_depend>std_msgs</run_depend>
+-  <run_depend>tf2</run_depend>
+-  <run_depend>tf2_ros</run_depend>  
+-  <run_depend>eigen</run_depend>
+-  <run_depend>cmake_modules</run_depend>
+-  <run_depend>sensor_msgs</run_depend>
+-  <run_depend>tf2_geometry_msgs</run_depend>
+-  <export>
+-    <build_type>ament_cmake</build_type>
+-  </export>
++  <build_depend>eigen3_cmake_module</build_depend>
++  <depend>rclcpp</depend><depend>std_msgs</depend><depend>geometry_msgs</depend>
++  <depend>nav_msgs</depend><depend>sensor_msgs</depend><depend>tf2</depend>
++  <depend>tf2_ros</depend><depend>tf2_geometry_msgs</depend>
++  <depend>eigen</depend><depend>boost</depend>
++  <export><build_type>ament_cmake</build_type></export>
+ </package>
+diff --git a/src/CLaserOdometry2D.cpp b/src/CLaserOdometry2D.cpp
+index 210bc04..5dd0dde 100644
+--- a/src/CLaserOdometry2D.cpp
++++ b/src/CLaserOdometry2D.cpp
+@@ -16,6 +16,8 @@
+ ******************************************************************************************** */
+ 
+ #include "rf2o_laser_odometry/CLaserOdometry2D.hpp"
++#include <algorithm>
++#include <limits>
+ 
+ namespace rf2o {
+ 
+@@ -24,7 +26,7 @@ namespace rf2o {
+  * Constructor that inherits from Node
+ */
+ CLaserOdometry2D::CLaserOdometry2D() :
+-  Node("CLaserOdometry2D"),
++  Node("rf2o_solver", rclcpp::NodeOptions().use_global_arguments(false).enable_rosout(false)),
+   verbose(false),
+   module_initialized(false),
+   first_laser_scan(true),
+@@ -86,12 +88,14 @@ void CLaserOdometry2D::init(const sensor_msgs::msg::LaserScan& scan,
+ 
+   // Get the initial laser pose assuming laser is fixed with respect the base_link
+   laser_pose_    = robot_initial_pose * laser_pose_on_robot_;
+-  laser_oldpose_ = laser_oldpose_;
++  laser_oldpose_ = laser_pose_;
++  robot_pose_ = robot_initial_pose;
++  robot_oldpose_ = robot_initial_pose;
+ 
+ 
+   // Init rf2o module (internal)
+   //-----------------------------
+-  range_wf = Eigen::MatrixXf::Constant(1, width, 1);
++  range_wf = Eigen::Map<const Eigen::MatrixXf>(scan.ranges.data(), 1, width);
+ 
+   // Resize vectors according to coarse2fine levels
+   transformations.resize(ctf_levels);
+@@ -165,6 +169,10 @@ void CLaserOdometry2D::init(const sensor_msgs::msg::LaserScan& scan,
+ 
+   module_initialized = true;
+   last_odom_time = scan.header.stamp;   // the time of this first scan
++  current_scan_time = scan.header.stamp;
++  lin_speed = 0.0;
++  ang_speed = 0.0;
++  createImagePyramid();  // Seed the previous frame with actual first-scan geometry.
+ }
+ 
+ 
+@@ -204,7 +212,7 @@ bool CLaserOdometry2D::odometryCalculation(const sensor_msgs::msg::LaserScan& sc
+   //=====================================
+ 
+   // copy @param scan to internal variable (we already did it for the previous scan)
+-  range_wf = Eigen::Map<const Eigen::MatrixXf>(scan.ranges.data(), width, 1);
++  range_wf = Eigen::Map<const Eigen::MatrixXf>(scan.ranges.data(), 1, width);
+ 
+   // Keep record of times
+   auto start = get_clock()->now();
+@@ -212,6 +220,9 @@ bool CLaserOdometry2D::odometryCalculation(const sensor_msgs::msg::LaserScan& sc
+   // Create pyramid from current scan
+   createImagePyramid();
+ 
++  unsigned int solved_levels = 0;
++  bool finest_level_solved = false;
++
+   // Coarse-to-fine scheme (pyramid lvls)
+   for (unsigned int i=0; i<ctf_levels; i++)
+   {
+@@ -268,9 +279,14 @@ bool CLaserOdometry2D::odometryCalculation(const sensor_msgs::msg::LaserScan& sc
+     }
+ 
+     // 8. Filter solution
+-    if (!filterLevelSolution()) return false;
++    if (!cov_odo.allFinite() || !kai_loc_level_.allFinite() || !filterLevelSolution()) return false;
++    ++solved_levels;
++    if (i + 1 == ctf_levels) finest_level_solved = true;
+   } // end pyramid lvls
+ 
++  // No fresh identity odometry from a scan pair with no observable solved level.
++  if (solved_levels == 0 || !finest_level_solved) return false;
++
+   // Get computation time 
+   auto m_runtime = get_clock()->now() - start;
+   RCLCPP_INFO(get_logger(), "execution time (ms): %f",
+@@ -582,10 +598,10 @@ void CLaserOdometry2D::computeWeights()
+           kdtita*(dtita(u)*dtita(u)) +
+           k2d*(std::abs(dtitat) + std::abs(dtita2));
+ 
+-      weights(u) = std::sqrt(1.f/w_der);
++      weights(u) = std::sqrt(1.f/std::max(w_der, 1e-12f));
+     }
+ 
+-  const float inv_max = 1.f / weights.maxCoeff();
++  const float inv_max = 1.f / std::max(weights.maxCoeff(), 1e-12f);
+   weights = inv_max*weights;
+ }
+ 
+@@ -638,6 +654,12 @@ void CLaserOdometry2D::solveSystemOneLevel()
+   Eigen::MatrixXf AtA, AtB;
+   AtA = A.transpose()*A;
+   AtB = A.transpose()*B;
++  Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> rank_check(AtA);
++  if (!AtA.allFinite() || rank_check.info() != Eigen::Success ||
++      rank_check.eigenvalues().minCoeff() <= 1e-8f * rank_check.eigenvalues().maxCoeff()) {
++    cov_odo.setConstant(std::numeric_limits<float>::quiet_NaN());
++    return;
++  }
+   Var = AtA.ldlt().solve(AtB);
+ 
+   //Covariance matrix calculation 	Cov Order -> vx,vy,wz
+@@ -679,6 +701,12 @@ void CLaserOdometry2D::solveSystemNonLinear()
+   Eigen::MatrixXf AtA, AtB;
+   AtA = A.transpose()*A;
+   AtB = A.transpose()*B;
++  Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> rank_check(AtA);
++  if (!AtA.allFinite() || rank_check.info() != Eigen::Success ||
++      rank_check.eigenvalues().minCoeff() <= 1e-8f * rank_check.eigenvalues().maxCoeff()) {
++    cov_odo.setConstant(std::numeric_limits<float>::quiet_NaN());
++    return;
++  }
+   Var = AtA.ldlt().solve(AtB);
+ 
+   //Covariance matrix calculation 	Cov Order -> vx,vy,wz
+@@ -700,7 +728,7 @@ void CLaserOdometry2D::solveSystemNonLinear()
+   //    printf("\n Aver dt = %f, aver res = %f", aver_dt, aver_res);
+ 
+ 
+-  const float k = 10.f/aver_dt; //200
++  const float k = 10.f/std::max(aver_dt, 1e-6f); // Stationary scans may have zero derivatives.
+   //float energy = 0.f;
+   //for (unsigned int i=0; i<res.rows(); i++)
+   //	energy += log(1.f + mrpt::math::square(k*res(i)));
+@@ -728,6 +756,13 @@ void CLaserOdometry2D::solveSystemNonLinear()
+     //Solve the linear system of equations using a minimum least squares method
+     AtA = Aw.transpose()*Aw;
+     AtB = Aw.transpose()*Bw;
++    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> weighted_rank_check(AtA);
++    if (!AtA.allFinite() || weighted_rank_check.info() != Eigen::Success ||
++        weighted_rank_check.eigenvalues().minCoeff() <=
++            1e-8f * weighted_rank_check.eigenvalues().maxCoeff()) {
++      cov_odo.setConstant(std::numeric_limits<float>::quiet_NaN());
++      return;
++    }
+     Var = AtA.ldlt().solve(AtB);
+     res = A*Var - B;
+ 
+@@ -985,7 +1020,8 @@ void CLaserOdometry2D::PoseUpdate()
+   //-------------------------------------------------------------------------------------
+   double time_inc_sec = (current_scan_time - last_odom_time).seconds();
+   last_odom_time = current_scan_time;
+-  lin_speed = acu_trans(0,2) / time_inc_sec;
++  const Pose3d base_increment = robot_oldpose_.inverse() * robot_pose_;
++  lin_speed = base_increment.translation()(0) / time_inc_sec;
+   //double lin_speed = sqrt( mrpt::math::square(robot_oldpose.x()-robot_pose.x()) + mrpt::math::square(robot_oldpose.y()-robot_pose.y()) )/time_inc_sec;
+ 
+   double ang_inc = rf2o::getYaw(robot_pose_.rotation()) -
+diff --git a/src/CLaserOdometry2DNode.cpp b/src/CLaserOdometry2DNode.cpp
+index 2206777..c84634b 100644
+--- a/src/CLaserOdometry2DNode.cpp
++++ b/src/CLaserOdometry2DNode.cpp
+@@ -16,6 +16,9 @@
+ ******************************************************************************************** */
+ 
+ #include "rf2o_laser_odometry/CLaserOdometry2DNode.hpp"
++#include <algorithm>
++#include <cmath>
++#include <stdexcept>
+ 
+ using namespace rf2o;
+ 
+@@ -39,6 +42,16 @@ CLaserOdometry2DNode::CLaserOdometry2DNode(): Node("CLaserOdometry2DNode")
+   this->get_parameter("init_pose_from_topic", init_pose_from_topic);
+   this->declare_parameter<double>("freq", 10.0);
+   this->get_parameter("freq", freq);
++  max_scan_age = this->declare_parameter<double>("max_scan_age", 0.25);
++  max_scan_gap = this->declare_parameter<double>("max_scan_gap", 0.50);
++  min_valid_ratio = this->declare_parameter<double>("min_valid_ratio", 0.20);
++  if (!std::isfinite(freq) || freq < 1.0 || freq > 100.0 ||
++      !std::isfinite(max_scan_age) || max_scan_age <= 0.0 ||
++      !std::isfinite(max_scan_gap) || max_scan_gap <= 0.0 ||
++      !std::isfinite(min_valid_ratio) || min_valid_ratio <= 0.0 || min_valid_ratio > 1.0)
++    throw std::invalid_argument("Invalid RF2O rate/scan validation parameters");
++  new_scan_available = false;
++  fault_latched = false;
+ 
+   // Init Publishers and Subscribers
+   //---------------------------------
+@@ -63,7 +76,7 @@ CLaserOdometry2DNode::CLaserOdometry2DNode(): Node("CLaserOdometry2DNode")
+     initial_robot_pose.pose.pose.position.x = 0;
+     initial_robot_pose.pose.pose.position.y = 0;
+     initial_robot_pose.pose.pose.position.z = 0;
+-    initial_robot_pose.pose.pose.orientation.w = 0;
++    initial_robot_pose.pose.pose.orientation.w = 1;
+     initial_robot_pose.pose.pose.orientation.x = 0;
+     initial_robot_pose.pose.pose.orientation.y = 0;
+     initial_robot_pose.pose.pose.orientation.z = 0;
+@@ -81,27 +94,57 @@ CLaserOdometry2DNode::CLaserOdometry2DNode(): Node("CLaserOdometry2DNode")
+ */
+ void CLaserOdometry2DNode::LaserCallBack(const sensor_msgs::msg::LaserScan::SharedPtr new_scan)
+ {
+-  if (GT_pose_initialized)
+-  {
+-    // Keep in memory the last received laser_scan
+-    last_scan = *new_scan;
+-    rf2o_ref.current_scan_time = last_scan.header.stamp;
+-    
+-    if (rf2o_ref.first_laser_scan == false)
+-    {
+-      // copy laser range data to rf2o internal variable
+-      for (unsigned int i = 0; i < rf2o_ref.width; i++)
+-        rf2o_ref.range_wf(i) = new_scan->ranges[i];
+-      // inform of new scan available
+-      new_scan_available = true;
+-    }
++  if (!GT_pose_initialized || fault_latched) return;
++  const auto stamp = rclcpp::Time(new_scan->header.stamp, get_clock()->get_clock_type());
++  const double age = (get_clock()->now() - stamp).seconds();
++  const size_t count = new_scan->ranges.size();
++  const bool geometry_ok = count >= 64 && count <= 20000 &&
++      !new_scan->header.frame_id.empty() && std::isfinite(new_scan->angle_min) &&
++      std::isfinite(new_scan->angle_max) && std::isfinite(new_scan->angle_increment) &&
++      new_scan->angle_increment > 0.0f && new_scan->angle_max > new_scan->angle_min &&
++      std::abs(new_scan->angle_min + new_scan->angle_max) < 0.03 &&
++      std::abs((count - 1) * new_scan->angle_increment -
++               (new_scan->angle_max - new_scan->angle_min)) < 0.03 &&
++      std::isfinite(new_scan->range_min) && std::isfinite(new_scan->range_max) &&
++      new_scan->range_min > 0.0f && new_scan->range_max > new_scan->range_min;
++  sensor_msgs::msg::LaserScan clean = *new_scan;
++  size_t valid = 0;
++  for (auto &range : clean.ranges) {
++    if (std::isfinite(range) && range >= clean.range_min && range <= clean.range_max)
++      ++valid;
+     else
+-    {
+-      // Initialize module on first scan (from laser params)
+-      setLaserPoseFromTf();
+-      rf2o_ref.init(last_scan, initial_robot_pose.pose.pose);
+-      rf2o_ref.first_laser_scan = false;
++      range = 0.0f;  // RF2O's missing-return representation, never free space.
++  }
++  const bool quality_ok = valid >= 64 && valid >= min_valid_ratio * count;
++  if (!geometry_ok || !quality_ok || !std::isfinite(age) || age < -0.05 || age > max_scan_age) {
++    if (!rf2o_ref.first_laser_scan) fault_latched = true;
++    new_scan_available = false;
++    RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000,
++                        "Invalid/stale scan: no odometry; restart after a running-session fault");
++    return;
++  }
++  if (!rf2o_ref.first_laser_scan) {
++    const auto previous_stamp = rclcpp::Time(last_scan.header.stamp, get_clock()->get_clock_type());
++    const double elapsed = (stamp - previous_stamp).seconds();
++    const bool same_geometry = count == rf2o_ref.width &&
++        clean.header.frame_id == last_scan.header.frame_id &&
++        std::abs(clean.angle_min - last_scan.angle_min) < 1e-5 &&
++        std::abs(clean.angle_max - last_scan.angle_max) < 1e-5;
++    if (!same_geometry || elapsed <= 0.0 || elapsed > max_scan_gap) {
++      fault_latched = true;
++      new_scan_available = false;
++      RCLCPP_ERROR(get_logger(), "RF2O scan geometry/time discontinuity; restart and relocalize");
++      return;
+     }
++    last_scan = std::move(clean);
++    rf2o_ref.current_scan_time = rclcpp::Time(last_scan.header.stamp);
++    new_scan_available = true;
++  } else {
++    last_scan = std::move(clean);
++    // TF listener may not have received the static transform at startup. Retry safely.
++    if (!setLaserPoseFromTf()) return;
++    rf2o_ref.init(last_scan, initial_robot_pose.pose.pose);
++    rf2o_ref.first_laser_scan = false;
+   }
+ }
+ 
+@@ -123,7 +166,7 @@ bool CLaserOdometry2DNode::setLaserPoseFromTf()
+   catch (tf2::TransformException &ex)
+   {
+     RCLCPP_ERROR(get_logger(), "%s",ex.what());
+-    retrieved = false;
++    return false;
+   }
+ 
+   // Keep this transform as Eigen Matrix3d
+@@ -164,10 +207,17 @@ void CLaserOdometry2DNode::process()
+   // Do only run when a new scan is ready 
+   if( rf2o_ref.is_initialized() && scan_available() )
+   {
+-    // Process odometry estimation
+-    rf2o_ref.odometryCalculation(last_scan);
++    // Reject solver failures. Publishing an unchanged pose with a fresh stamp is unsafe.
++    if (!rf2o_ref.odometryCalculation(last_scan) ||
++        !rf2o_ref.robot_pose_.matrix().allFinite() ||
++        !std::isfinite(rf2o_ref.lin_speed) || !std::isfinite(rf2o_ref.ang_speed)) {
++      fault_latched = true;
++      new_scan_available = false;
++      RCLCPP_ERROR(get_logger(), "RF2O solver rejected scan; restart and relocalize");
++      return;
++    }
+ 
+-    // Publish odometry over ROS2 (tf/topic)
++    // The output retains acquisition time, never the timer/processing wall clock.
+     publish();
+ 
+     // Do not run on the same data!
+@@ -176,7 +226,7 @@ void CLaserOdometry2DNode::process()
+   else
+   {
+     // This is a warning. We depend on laser scans, so no meaning running faster than scan freq.
+-    RCLCPP_WARN(get_logger(), "Waiting for laser_scans....");
++    RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000, "Waiting for valid new laser scan...");
+   }
+ }
+ 

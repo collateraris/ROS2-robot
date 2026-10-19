@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "scene_id": "train_000",
+  "split": "train",
+  "seed": 100,
+  "benchmark_kind": "primitive_fixture_not_zero_shot_semantics",
+  "world_name": "room",
+  "gt_frame": "sim_world",
+  "room": {
+    "width": 5.646,
+    "height": 4.955
+  },
+  "spawn": {
+    "x": -1.823,
+    "y": -1.4775,
+    "yaw": 0.15
+  },
+  "objects": [
+    {
+      "id": "person_proxy",
+      "label": "person",
+      "x": 1.7229999999999999,
+      "y": 1.131,
+      "radius": 0.18
+    },
+    {
+      "id": "table_proxy",
+      "label": "table",
+      "x": 0.1,
+      "y": 1.6775,
+      "size": [
+        0.9,
+        0.6,
+        0.72
+      ]
+    },
+    {
+      "id": "box_0",
+      "label": "box",
+      "x": 0.14,
+      "y": -1.493,
+      "size": [
+        0.35,
+        0.45,
+        0.5
+      ]
+    },
+    {
+      "id": "box_1",
+      "label": "box",
+      "x": -0.699,
+      "y": -0.678,
+      "size": [
+        0.35,
+        0.45,
+        0.5
+      ]
+    },
+    {
+      "id": "box_2",
+      "label": "box",
+      "x": 1.138,
+      "y": -1.053,
+      "size": [
+        0.35,
+        0.45,
+        0.5
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "approach_person",
+      "command": "подъедь к человеку",
+      "target_id": "person_proxy",
+      "goal": {
+        "x": 0.9174733654344315,
+        "y": 0.5384404325255822,
+        "yaw": 0.6342326493338977
+      },
+      "timeout_sim_s": 150.0,
+      "criteria": {
+        "kind": "standoff",
+        "target": {
+          "x": 1.7229999999999999,
+          "y": 1.131
+        },
+        "standoff_m": 1.0,
+        "distance_tolerance_m": 0.25,
+        "yaw_tolerance_rad": 0.4
+      }
+    },
+    {
+      "id": "go_table",
+      "command": "поезжай к table",
+      "semantic_example": "подъедь к столу",
+      "target_id": "table_proxy",
+      "goal": {
+        "x": 0.1,
+        "y": 0.7775,
+        "yaw": 1.5707963267948966
+      },
+      "timeout_sim_s": 150.0,
+      "criteria": {
+        "kind": "pose",
+        "position_tolerance_m": 0.25,
+        "yaw_tolerance_rad": 0.4
+      }
+    },
+    {
+      "id": "go_home",
+      "command": "домой",
+      "target_id": "home",
+      "goal": {
+        "x": -1.823,
+        "y": -1.4775,
+        "yaw": 0.15
+      },
+      "timeout_sim_s": 150.0,
+      "criteria": {
+        "kind": "pose",
+        "position_tolerance_m": 0.25,
+        "yaw_tolerance_rad": 0.4
+      }
+    }
+  ],
+  "notes": [
+    "Primitive person/table shapes are geometry proxies; real detector recognition is not assumed.",
+    "GT objects/goals are evaluator-only; no GT-to-perception publisher exists.",
+    "Known table/home map waypoints are an explicit fixture prior, not semantic grounding."
+  ]
+}

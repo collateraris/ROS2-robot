@@ -1,0 +1,14 @@
+uint16 schema_version
+string<=128 goal_id
+string<=32 event_type
+uint64 pi_receive_monotonic_ns
+uint32 boot_id
+uint32 nonce
+uint32 seq
+uint64 pulse_id
+uint32 mcu_tick
+int16 left_pwm
+int16 right_pwm
+string<=256 reason
+bool has_interval
+roomwm_msgs/ActuationInterval interval

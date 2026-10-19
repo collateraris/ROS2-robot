@@ -1,0 +1,29 @@
+room_tasks:
+  ros__parameters:
+    backend: rules
+    model: qwen2.5vl:7b
+    ollama_endpoint: http://127.0.0.1:11434
+    # Both explicit switches must allow movement. Models cannot change them.
+    shadow_only: true
+    enable_execution: false
+    waypoints_file: ''
+    waypoints_confirmed: false
+    scene_topic: /room_semantics/objects
+    use_image: false
+    image_topic: /camera/image_raw
+    max_scene_age_s: 1.0
+    max_image_age_s: 0.5
+    planning_timeout_s: 30.0
+    http_timeout_s: 25.0
+    path_timeout_s: 5.0
+    goal_timeout_s: 60.0
+    max_target_movement_m: 0.3
+    max_uncertainty_m: 0.3
+    minimum_score: 0.5
+    # EXAMPLE ONLY: set the enclosing radius of the actual chassis.
+    robot_radius_m: 0.18
+    clearance_margin_m: 0.05
+    standoff_m: 0.8
+    tf_max_age_s: 0.5
+    odom_health_timeout_s: 0.3
+    log_file: logs/week03_tasks.jsonl

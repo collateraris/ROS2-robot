@@ -1,0 +1,40 @@
+{
+  "schema_version": 3,
+  "odometry_source": "rf2o_laser_odometry_guarded",
+  "action_source": "mcu_acknowledged_nominal_velocity_setpoint",
+  "recording_limits_s": {
+    "image_age": 0.2,
+    "odom_age": 0.15,
+    "scan_age": 0.25,
+    "health_age": 0.3,
+    "ack_gap": 0.25,
+    "armed_age": 0.8
+  },
+  "map_id": "REPLACE_WITH_SAVED_MAP_SHA256",
+  "sectors": 72,
+  "lidar_max_m": 5.0,
+  "synthetic": false,
+  "candidates": [
+    {
+      "name": "STOP",
+      "pose": null
+    },
+    {
+      "name": "desk",
+      "pose": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "home",
+      "pose": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    }
+  ],
+  "environment": "hardware"
+}

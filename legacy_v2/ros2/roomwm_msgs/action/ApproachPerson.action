@@ -1,0 +1,14 @@
+# Request must match the configured reviewed standoff; it cannot change speed/ARM.
+float64 standoff_m
+float64 timeout_s
+bool avoid_obstacles
+---
+bool success
+string reason
+uint32 completed_pulses
+---
+string phase
+bool person_visible
+float64 person_distance_m
+float64 person_bearing_rad
+uint32 completed_pulses

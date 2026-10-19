@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.7.0
+rootdir: /workspace/scratch/474a584849cf/room_robot_v5_four_weeks
+configfile: pyproject.toml
+collected 186 items
+
+tests/test_evaluation_metrics.py .........                               [  4%]
+tests/test_evaluation_scenes.py ....                                     [  6%]
+tests/test_extras.py ....                                                [  9%]
+tests/test_planning_backends.py .........                                [ 13%]
+tests/test_planning_coordinator.py .........                             [ 18%]
+tests/test_planning_core.py ..........................................   [ 41%]
+tests/test_pwm_calibrate.py .....                                        [ 44%]
+tests/test_semantics_detector.py ....                                    [ 46%]
+tests/test_semantics_geometry.py ............                            [ 52%]
+tests/test_stack_integration.py .........                                [ 57%]
+learning_nav/tests/test_data.py ..............                           [ 65%]
+learning_nav/tests/test_models.py ...                                    [ 66%]
+learning_nav/tests/test_recording.py ....                                [ 68%]
+ros2_ws/src/room_base/test/test_core.py .....                            [ 71%]
+ros2_ws/src/room_base/test/test_encoderless_bridge.py ....               [ 73%]
+ros2_ws/src/room_base/test/test_encoderless_core.py ...........          [ 79%]
+ros2_ws/src/room_base/test/test_odom_guard.py ...........                [ 85%]
+ros2_ws/src/room_nav/test/test_bringup.py ....                           [ 87%]
+ros2_ws/src/room_nav/test/test_core.py ....                              [ 89%]
+ros2_ws/src/room_sim/test/test_action_lifecycle.py ........              [ 94%]
+ros2_ws/src/room_sim/test/test_launch_assets.py .....                    [ 96%]
+ros2_ws/src/room_sim/test/test_safety.py ......                          [100%]
+
+============================= 186 passed in 2.75s ==============================
+encoderless firmware CRC/session/PWM/watchdog tests passed; physical timing NOT emulated
+RF2O math host checks passed: stationary room, translation, empty/rank-deficient rejection

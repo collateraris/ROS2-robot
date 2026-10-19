@@ -1,222 +1,149 @@
-# Установка на вашу Raspberry Pi и запуск с Android / Windows
+# Установка окружения v5
 
-Используются ваши данные: Ubuntu 24.04 arm64, ROS 2 Jazzy, пользователь `shapturov`, адрес Pi `192.168.0.28`, USB-камера `/dev/video0`. Нужна Uno R3 / классическая Nano ATmega328P. В браузере телефона будут джойстик, СТОП и изображение; существующее Bluetooth-приложение продолжит управлять через прежний модуль.
+Целевая система: Ubuntu 24.04, ROS 2 Jazzy, системный Python 3.12, Gazebo Harmonic для симуляции. Humble и Jazzy не смешивать; для этой поставки команды Humble не предусмотрены. Начать всё на одной Ubuntu-системе. Разнесение сенсоров/нейросетей по Wi-Fi — следующий шаг после работающего локального запуска.
 
-**Перед первой загрузкой прочитайте HARDWARE_RU.md: ENA нужно перенести с D1 на D9.** Новая папка называется `robot_bluetooth_ros2`; это отдельный профиль под ваши три файла. Старый `robot_wifi_teleop` не запускайте одновременно с новым: у них одинаковые имя ROS-пакета, порт 8080 и аппаратные устройства.
+## 1. ROS2 Jazzy
 
-## 1. SSH доступен после включения Raspberry Pi
-
-На Windows, PowerShell:
-
-```powershell
-ssh shapturov@192.168.0.28
-```
-
-После входа выполняйте следующие команды **на Pi**, в этом SSH-терминале:
+Если `source /opt/ros/jazzy/setup.bash; ros2 --help` уже работает, переустановка не требуется.
+Для чистой Ubuntu 24.04:
 
 ```bash
-if systemctl is-active --quiet ssh.socket; then
-    sudo systemctl enable ssh.socket
-else
-    sudo systemctl enable ssh.service
-fi
-systemctl list-unit-files ssh.service ssh.socket
-```
-
-Команда сохраняет тот способ запуска, которым уже обслуживается ваш SSH. Для выбранного unit в столбце STATE должно быть `enabled`. В Ubuntu 24.04 SSH обычно запускается по входящему подключению через `ssh.socket`; при этом `ssh.service` может быть `disabled`, и это не означает, что SSH после загрузки недоступен. `enable` включает автозапуск, не останавливая текущую SSH-сессию.
-
-Pi должна загрузиться и подключиться к известной Wi-Fi-сети. Для сохранения адреса `192.168.0.28` откройте настройки домашнего роутера и закрепите этот адрес за Wi-Fi MAC-адресом Pi в DHCP reservation / Address Reservation. Не назначайте случайный статический адрес через SSH: ошибка сетевой конфигурации может лишить доступа. Подключение с Windows всегда остаётся `ssh shapturov@192.168.0.28`.
-
-[Ubuntu 24.04: SSH socket activation](https://documentation.ubuntu.com/release-notes/24.04/), [systemctl](https://manpages.debian.org/bookworm/systemd/systemctl.1.en.html), [DHCP reservation Raspberry Pi](https://www.raspberrypi.com/documentation/computers/configuration.html#manage-dhcp-and-static-ip).
-
-## 2. Прошить Arduino и скопировать проект
-
-Скачайте полный архив и распакуйте так, чтобы в Windows существовала папка:
-
-```text
-C:\Users\twoli\Downloads\robot_bluetooth_ros2
-```
-
-Внутри неё сразу должны быть `arduino`, `ros2_ws`, `scripts`, `docs`; Проводник иногда добавляет дополнительную внешнюю папку с именем архива. Не копируйте только внешнюю оболочку.
-
-На Windows откройте `arduino/blu_drive/blu_drive.ino` в Arduino IDE. `motor.h` и `move_case.h` должны лежать рядом. Выберите вашу Uno/Nano и её COM-порт, скомпилируйте и загрузите. Сначала перенесите ENA на D9 и отключите питание моторов на время переподключения. После прошивки закройте Serial Monitor, подключите Arduino к Pi кабелем USB с передачей данных.
-
-В отдельном **PowerShell Windows**:
-
-```powershell
-Test-Path "$env:USERPROFILE\Downloads\robot_bluetooth_ros2\scripts\run_robot.sh"
-scp -r "$env:USERPROFILE\Downloads\robot_bluetooth_ros2" shapturov@192.168.0.28:~/
-```
-
-Первая команда должна вернуть `True`. Не используйте `127.0.0.1` или `127.0.1.1`: из PowerShell это адрес самого компьютера, не Pi.
-
-## 3. Зависимости ROS 2
-
-Поскольку вы уже установили Jazzy, повторная установка ОС и ROS не нужна. В SSH на **Pi**:
-
-```bash
-source /opt/ros/jazzy/setup.bash
 sudo apt update
-sudo apt install -y ros-jazzy-cv-bridge python3-opencv python3-aiohttp python3-serial python3-yaml ros-dev-tools v4l-utils unzip tmux
-sudo usermod -aG dialout,video shapturov
+sudo apt install -y curl software-properties-common locales
+sudo add-apt-repository universe
+locale
 ```
 
-Выйдите командой `exit` и снова подключитесь с Windows, чтобы новая оболочка получила группы `dialout` и `video`:
-
-```powershell
-ssh shapturov@192.168.0.28
-```
-
-На Pi:
+Вывод locale должен использовать UTF-8. При отсутствии:
 
 ```bash
-groups
-ls -l /dev/serial/by-id/
-v4l2-ctl --list-devices
+sudo locale-gen en_US en_US.UTF-8
+sudo update-locale LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 ```
 
-Для Arduino используйте найденный `/dev/serial/by-id/...`, если он существует. У Uno это часто `/dev/ttyACM0`, у Nano с USB-UART адаптером — `/dev/ttyUSB0`; выбирайте фактически появившееся устройство. Проект не угадывает порт. В примере запуска ниже `/dev/ttyACM0` нужно заменить, если ваша плата определяется иначе.
-
-### Если Jazzy на новой Pi ещё нет
-
-Нужна именно Ubuntu 24.04 arm64 / Noble, не Raspberry Pi OS. Проверка:
+Официальный apt-source пакет:
 
 ```bash
-cat /etc/os-release
-uname -m
-```
-
-Для свежей Ubuntu 24.04 используйте включённый установщик вместо ручного добавления второго ROS-репозитория:
-
-```bash
-cd ~/robot_bluetooth_ros2
-bash scripts/install_jazzy.sh pi
-```
-
-Он устанавливает ros-jazzy-ros-base, зависимости проекта и rosdep. После изменения групп снова войдите по SSH. [Официальная инструкция Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html), [официальное зеркало](https://repo.test.ros2.org/en/jazzy/Installation/Ubuntu-Install-Debs.html).
-
-### Если повторится ваша ошибка apt с liblz4 / libzstd
-
-Сначала проверьте, что в `/etc/apt/sources.list.d/ubuntu.sources` у обычного архива Ubuntu включены `noble` и `noble-updates`. Ранее в присланном выводе был виден `noble-security`, но не `noble-updates`: это возможная причина несогласованных версий, а не доказательство held-пакетов. Добавьте `noble-updates` к существующей строке Suites обычного Ubuntu-архива, сохранив URIs, Components, Signed-By и отдельную секцию security; затем выполните `sudo apt update` и повторите установку. Не понижайте библиотеки и не удаляйте пакеты вслепую.
-
-## 4. Сборка нового проекта
-
-В **новом SSH-терминале Pi**, чтобы не наследовать вручную подключённую старую сборку:
-
-```bash
+room_ros_repo_version=$(curl -fsSL https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
+curl -fL "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${room_ros_repo_version}/ros2-apt-source_${room_ros_repo_version}.noble_all.deb" -o /tmp/room-ros2-apt-source.deb
+sudo dpkg -i /tmp/room-ros2-apt-source.deb
+sudo apt update
+sudo apt install -y ros-jazzy-desktop ros-dev-tools
 source /opt/ros/jazzy/setup.bash
-cd ~/robot_bluetooth_ros2/ros2_ws
+ros2 --help
 ```
 
-Если rosdep уже инициализирован, повторять init не нужно. Для новой системы:
+Официальные инструкции: https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
+
+## 2. Распаковка и apt-зависимости проекта
 
 ```bash
-if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then
-    sudo rosdep init
-fi
+mkdir -p ~/robot
+unzip ~/Downloads/room_robot_v5_four_weeks.zip -d ~/robot
+cd ~/robot/room_robot_v5_four_weeks
+bash scripts/install_system.sh sim
+```
+
+`sim` устанавливает Gazebo/ros_gz, robot_state_publisher и xacro вместе с Nav2/SLAM. Для одной аппаратной системы без симулятора можно выбрать `hardware`.
+
+## 3. Собрать ROS-пакеты до venv
+
+Использовать новый терминал с системным Python, без активного Conda/venv.
+
+```bash
+cd ~/robot/room_robot_v5_four_weeks
+source /opt/ros/jazzy/setup.bash
+bash scripts/fetch_ros_drivers.sh
+```
+
+Если rosdep ещё не был настроен, один раз `sudo rosdep init`. Затем:
+
+```bash
 rosdep update
-rosdep install --from-paths src --ignore-src -y --rosdistro jazzy
-colcon build --symlink-install
-source install/setup.bash
-ros2 pkg prefix robot_web_teleop
+rosdep install --from-paths ros2_ws/src --ignore-src -r -y --rosdistro jazzy
+bash scripts/build_ros.sh all
 ```
 
-Последний путь должен указывать на `robot_bluetooth_ros2/ros2_ws/install`, а не на старый проект. Если в `.bashrc` автоматически подключается старый workspace, подключите новый `install/setup.bash` последним. Не копируйте build/install/log с Windows или старого workspace.
+Для аппаратной установки без ros_gz: `bash scripts/build_ros.sh hardware`; rosdep при этом запускать только для `room_base room_nav room_perception room_tasks rf2o_laser_odometry sllidar_ros2`, например явно перечислив эти каталоги после --from-paths. Иначе rosdep обоснованно поставит зависимости симулятора из room_sim/room_eval.
 
-Исправление `Cannot locate rosdep definition for [ament_python]` уже учтено: в package.xml сохранён `<export><build_type>ament_python</build_type></export>`, ошибочного `<buildtool_depend>ament_python</buildtool_depend>` нет.
+Исправленный build_ros временно выключает Bash nounset только при source ROS. Сборка проверяет новые ROS-пакеты через colcon. Реальная сборка в среде автора не выполнена, потому что ROS 2 runtime отсутствует; при первом запуске сохранить полный вывод colcon.
 
-## 5. Запуск робота и телефона
+## 4. Окружение Python
 
-Остановите предыдущие `robot.launch.py`, `camera_node`, `web_node`, Serial Monitor и любые другие процессы, владеющие камерой или Arduino. В их терминале используйте `Ctrl+C`. Если работали в tmux, сначала вернитесь в тот сеанс; второй сервер на 8080 запускать нельзя.
-
-Первое испытание — колёса подняты. На **Pi**:
+Для недели1 достаточно:
 
 ```bash
-cd ~/robot_bluetooth_ros2
-bash scripts/run_robot.sh serial_port:=/dev/ttyACM0 camera_device:=/dev/video0 camera_required:=false
+bash scripts/setup_python.sh base
+source scripts/env_robot.sh
 ```
 
-Если Arduino — `/dev/ttyUSB0`, передайте `serial_port:=/dev/ttyUSB0`. Можно указать фактический длинный by-id путь. Скрипт запросит пароль страницы, минимум 8 символов. Это отдельный пароль пульта, не обязательно пароль SSH. Оставьте запуск работающим.
-
-На **Android**:
-
-1. Подключитесь к той же домашней Wi-Fi-сети, что и Pi. Сеть должна разрешать соединения между клиентами.
-2. В Chrome или другом современном браузере откройте **http://192.168.0.28:8080/**.
-3. Введите заданный пароль. При необходимости сделайте ярлык страницы через меню браузера; отдельный APK не требуется.
-4. Дождитесь «Arduino: Wi-Fi готов», отпустите кнопки старого Bluetooth-пульта и нажмите «Взять управление».
-5. Удерживайте джойстик для движения. Отпускание посылает ноль. Кнопка СТОП запрашивает остановку Wi-Fi и Bluetooth.
-
-Для `camera_required:=false` интерфейс показывает «Управление в прямой видимости — смотри на робота». При ваших медленных кадрах этот профиль позволяет ручное управление с наблюдением за самим роботом. Остановка/отсутствие камеры не блокирует движение; связь с Arduino и свежие команды остаются обязательными.
-
-Для режима, требующего свежего видео, остановите старый запуск и выполните:
+Для воспроизводимой CPU-проверки всех Python-модулей:
 
 ```bash
-bash scripts/run_robot.sh serial_port:=/dev/ttyACM0 camera_device:=/dev/video0 camera_required:=true
+bash scripts/setup_python.sh all cpu
+source scripts/env_robot.sh
+python -c 'import torch,transformers; print(torch.__version__,transformers.__version__,torch.cuda.is_available())'
 ```
 
-При чтении 0.6–0.75 с ваша камера может не пройти этот контроль. Причина низкой частоты ещё не установлена; увеличение разрешённого возраста не устраняет задержку реального изображения. См. CAMERA_SLOW_RU.md.
-
-Чтобы проверить только изображение, остановите полный launch и запустите:
+CPU подходит для проверки кода, но своевременное восприятие/планирование в движении не гарантируется. Для GPU сначала создать `.venv` командой `/usr/bin/python3 -m venv --system-site-packages .venv`, затем установить совместимый с драйвером PyTorch по https://pytorch.org/get-started/locally/ через `.venv/bin/python -m pip ...`. После этого:
 
 ```bash
-bash scripts/view_camera.sh camera_device:=/dev/video0
+bash scripts/setup_python.sh all existing
+source scripts/env_robot.sh
+python -c 'import torch; assert torch.cuda.is_available(); print(torch.cuda.get_device_name())'
 ```
 
-В этом режиме нет управления моторами и USB-мост не запускается. Возвращаясь к управлению, остановите просмотр через Ctrl+C.
+В extras зафиксирован Transformers 4.52.3, под его API написан GroundingDINO-адаптер. `torch` >=2.6,<3. Установка новой major-версии Transformers требует проверки API, не меняй её автоматически. Симулятор, детектор и VLM могут конкурировать за одну GPU; измерять задержку, не обещать суммарное потребление VRAM по размеру скачанного файла.
 
-### Сохранить процесс при закрытии SSH
-
-Автозапуск SSH и работа ROS-программы — разные задачи. Для сохранения текущего запуска используйте tmux:
+## 5. Каждый новый терминал
 
 ```bash
-tmux new -s robot
-cd ~/robot_bluetooth_ros2
-bash scripts/run_robot.sh serial_port:=/dev/ttyACM0 camera_required:=false
+cd ~/robot/room_robot_v5_four_weeks
+source scripts/env_robot.sh
 ```
 
-Отсоединиться от tmux: `Ctrl+B`, отпустить клавиши, затем `D`. Вернуться: `tmux attach -t robot`. Для остановки программы вернитесь в сеанс и нажмите Ctrl+C. Само включение SSH не запускает моторы и не включает этот launch.
+Скрипт source ROS+colcon overlay, активирует venv, добавляет корень проекта в PYTHONPATH и задаёт ROS_DOMAIN_ID=42 только если он не задан. Он должен быть именно source, не bash: переменные нужны текущему терминалу.
 
-## 6. Контроль из терминала ROS
-
-В другом SSH-сеансе Pi:
+Проверки:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source ~/robot_bluetooth_ros2/ros2_ws/install/setup.bash
-export ROS_DOMAIN_ID=42
-export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
-ros2 topic list
-ros2 topic echo /robot/drive/source
+python -c 'import rclpy,room_base.core; print("ROS Python OK")'
+ros2 pkg prefix room_sim
+ros2 pkg prefix room_perception
+ros2 pkg prefix room_tasks
+ros2 pkg prefix room_eval
 ```
 
-Чтобы смотреть готовность вместо источника, завершите echo и выполните:
+ROS console scripts имеют системный Python в shebang. Поэтому ML launch передаёт `python_executable:="$ROOM_PROJECT_ROOT/.venv/bin/python"`. Одной активации venv для такого console script недостаточно. Root Python-пакеты видны через PYTHONPATH; ROS-библиотеки — через --system-site-packages и source overlay.
+
+## 6. Локальная VLM через Ollama (неделя3)
+
+Установить Ollama по https://ollama.com/download/linux . Перед установкой можно скачать и прочитать официальный install.sh, затем выполнить его локально; скрипт установки не вызывается проектом автоматически. Проверить службу:
 
 ```bash
-ros2 topic echo /robot/drive/ready
+ollama --version
+ollama pull qwen2.5vl:7b
+curl -fsS http://127.0.0.1:11434/api/tags
 ```
 
-Явный общий СТОП из терминала:
+Для текстового планировщика без изображения допустим `qwen2.5:7b-instruct`; выбор модели явно задаётся в launch и отчёте. Это локальный HTTP API. Проект не требует OpenAI API key и не отправляет кадры наружу по умолчанию. Не выставлять Ollama в публичную сеть для локального стенда.
+
+## 7. C1/Arduino на реальном роботе
 
 ```bash
-ros2 topic pub --once /robot/drive/stop std_msgs/msg/Empty '{}'
+sudo usermod -aG dialout "$USER"
 ```
 
-Обычный нулевой cmd_vel не предназначен для остановки Bluetooth. До/после BT используйте штатные кнопки и проверьте фактическое состояние робота. Подтверждения serial — это применённый PWM, а не датчик вращения.
+Полностью выйти/войти в пользовательский сеанс. Определять C1 и Arduino поочерёдным подключением через `/dev/serial/by-id/` или, при неуникальных id, `/dev/serial/by-path/`. C1: 460800, Arduino:115200. Схема без энкодеров из v4 сохранена. Аппаратные пины, прошивка V5, калибровка PWM и STOP: [BASE_HARDWARE_RU.md](BASE_HARDWARE_RU.md). Первую карту строить с `start_bridge:=false` и отключённым питанием моторов.
 
-Управление через браузер не требует DDS между Windows и Pi: ROS-узлы работают на Pi, сеть передаёт HTTP/WebSocket. Windows нужен для SSH, Arduino IDE и браузера. RTX 4090 для ручного пульта не используется. Если позже понадобится ROS на ПК, можно установить Ubuntu 24.04 в WSL2 и Jazzy отдельно; к этому запуску он не нужен.
-
-## 7. Если страница не открывается
-
-Проверьте, что launch ещё работает и не сообщил об ошибке порта/пароля. На Windows:
-
-```powershell
-Test-NetConnection 192.168.0.28 -Port 8080
-```
-
-На Pi:
+## 8. Проверка окружения и кода
 
 ```bash
-ss -ltnp 'sport = :8080'
+python scripts/doctor.py --ros --sim
+bash scripts/verify_offline.sh
 ```
 
-Если SSH работает, а 8080 — нет, сначала проверьте процесс web_node. Если он слушает, проверьте firewall и изоляцию Wi-Fi-клиентов. Открывайте нужный порт только для своей домашней сети; не отключайте весь firewall и не пробрасывайте 8080 в интернет. Если браузер показывает Bluetooth, сначала отпустите кнопку Bluetooth и дождитесь ready, затем заново возьмите управление.
+Для ML дополнительно `python scripts/doctor.py --perception --ollama`. Doctor сообщает наличие зависимостей, не выполняет движение. Offline-тесты не заменяют запуск ROS/Gazebo. Если `/clock` не продвигается, снять паузу Gazebo; sim-time узлы не должны получать wall-time sensor stamps.
+
+Неделя 1: [WEEK01_RU.md](WEEK01_RU.md). Далее WEEK02/03/04 в том же каталоге.

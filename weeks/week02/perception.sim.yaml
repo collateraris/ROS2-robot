@@ -1,0 +1,25 @@
+room_perception:
+  ros__parameters:
+    image_topic: /camera/image_raw
+    camera_info_topic: /camera/camera_info
+    scan_topic: /scan
+    odom_health_topic: /room_base/odom_healthy
+    require_odom_healthy: true
+    image_is_rectified: true
+    camera_frame: camera_optical_frame
+    map_frame: map
+    fixed_frame: odom
+    model_id: IDEA-Research/grounding-dino-tiny
+    model_revision: a2bb814dd30d776dcf7e30523b00659f4f141c71
+    local_files_only: false
+    device: auto
+    labels: [person, chair, table, door]
+    score_threshold: 0.35
+    text_threshold: 0.25
+    max_image_age_s: 0.5
+    max_scan_age_s: 0.3
+    max_sync_s: 0.12
+    max_health_age_s: 0.3
+    min_cluster_points: 3
+    tracker_ttl_s: 0.8
+    publish_hz: 5.0

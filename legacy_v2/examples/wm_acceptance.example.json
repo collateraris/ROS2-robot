@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "example_only": true,
+  "instructions": "Unfilled example. Normal WM acceptance requires reviewed real action ablation AND reviewed paired physical trials. Synthetic smoke, zeros, missing measurements and placeholder hashes are not evidence. This file is rejected as supplied.",
+  "domain": "real_robot",
+  "reviewed": false,
+  "reviewer": "",
+  "reviewed_utc": "",
+  "checkpoint_sha256": "REPLACE_WITH_ACTUAL_CHECKPOINT_SHA256",
+  "calibration_fingerprint": "REPLACE_WITH_ACTUAL_CALIBRATION_FINGERPRINT",
+  "action_ablation": {
+    "domain": "real_robot",
+    "evidence_id": "REPLACE_WITH_REVIEWED_REAL_HELD_OUT_REPORT_ID",
+    "held_out": false,
+    "common_valid_label_mask": false,
+    "actual_action_aux_mae": null,
+    "zero_action_aux_mae": null,
+    "shuffled_action_aux_mae": null,
+    "persistence_aux_mae": null
+  },
+  "paired_trials": {
+    "domain": "real_robot",
+    "evidence_id": "REPLACE_WITH_REVIEWED_PAIRED_REAL_TRIAL_REPORT_ID",
+    "count": null,
+    "same_conditions_and_gate": false,
+    "wm_successes": null,
+    "reactive_successes": null,
+    "wm_interventions": null,
+    "reactive_interventions": null,
+    "wm_collisions": null,
+    "reactive_collisions": null,
+    "wm_min_clearance_m": null,
+    "reactive_min_clearance_m": null,
+    "common_successful_pairs": null,
+    "wm_median_time_s": null,
+    "reactive_median_time_s": null
+  }
+}

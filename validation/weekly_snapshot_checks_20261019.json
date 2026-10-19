@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-19",
+  "through_week": 1,
+  "pytest_returncode": 0,
+  "pytest_output": "........................................................................ [ 77%]\n.....................                                                    [100%]\n=========================== short test summary info ============================\nSKIPPED [1] learning_nav/tests/test_models.py:3: could not import 'torch': No module named 'torch'\n93 passed, 1 skipped in 2.13s\n",
+  "pytest_stderr": "",
+  "all_four_archives_checksums_and_links": "passed",
+  "scope": "current week01 extracted pytest and full source pytest; current other snapshots archive structure only"
+}

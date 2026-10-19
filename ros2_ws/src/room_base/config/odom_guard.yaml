@@ -1,0 +1,21 @@
+room_odom_guard:
+  ros__parameters:
+    raw_odom_topic: /odom_rf2o
+    scan_topic: /scan
+    odom_topic: /odom
+    odom_frame: odom
+    base_frame: base_link
+    publish_tf: true
+    scan_timeout: 0.35
+    odom_timeout: 0.35
+    max_gap: 0.40
+    max_linear: 0.40
+    max_angular: 1.20
+    position_slack: 0.015
+    angle_slack: 0.04
+    good_frames: 3
+    stamp_tolerance: 0.002
+    future_tolerance: 0.03
+    minimum_returns: 60
+    sectors: 16
+    minimum_sectors: 8

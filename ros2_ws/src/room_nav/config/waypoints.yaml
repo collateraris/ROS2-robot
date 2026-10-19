@@ -1,0 +1,10 @@
+# EXAMPLES ONLY: replace with measured coordinates in YOUR saved map.
+# enable_demo_waypoints stays false in launch; no navigation to these examples by default.
+frame_id: map
+waypoints:
+  home:
+    aliases: [домой, база, базе]
+    pose: [0.0, 0.0, 0.0]
+  desk:
+    aliases: [стол, столу]
+    pose: [1.0, 0.0, 0.0]

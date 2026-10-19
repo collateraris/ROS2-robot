@@ -1,0 +1,4 @@
+numpy>=1.26,<3
+torch>=2.2,<3
+# ROS recorder/shadow additionally require ROS 2 Jazzy rclpy, sensor_msgs,
+# geometry_msgs, nav_msgs and std_msgs from apt/your ROS workspace.

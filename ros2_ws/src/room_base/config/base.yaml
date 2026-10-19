@@ -1,0 +1,39 @@
+room_base:
+  ros__parameters:
+    # Two deliberate gates: inspect hardware/calibration before enabling either.
+    allow_actuation: false
+    calibration_confirmed: false
+    serial_port: /dev/serial/by-id/REPLACE_ARDUINO_ID
+    serial_baud: 115200
+    wheel_separation_m: 0.160
+    max_wheel_mm_s: 150
+    max_linear_m_s: 0.10
+    max_angular_rad_s: 0.50
+    # EXAMPLES ONLY. Four calibrations are independent. On the actual floor
+    # measure continuous running speeds at each minimum/maximum PWM. Below
+    # min_mm_s, a wheel stays at PWM=0 (no hidden kick/pulse amplification).
+    left_forward_min_mm_s: 20.0
+    left_forward_max_mm_s: 150.0
+    left_forward_min_pwm: 60
+    left_forward_max_pwm: 120
+    left_reverse_min_mm_s: 20.0
+    left_reverse_max_mm_s: 150.0
+    left_reverse_min_pwm: 60
+    left_reverse_max_pwm: 120
+    right_forward_min_mm_s: 20.0
+    right_forward_max_mm_s: 150.0
+    right_forward_min_pwm: 60
+    right_forward_max_pwm: 120
+    right_reverse_min_mm_s: 20.0
+    right_reverse_max_mm_s: 150.0
+    right_reverse_min_pwm: 60
+    right_reverse_max_pwm: 120
+    command_timeout_s: 0.25
+    deadman_timeout_s: 0.25
+    scan_timeout_s: 0.30
+    odom_timeout_s: 0.35
+    health_timeout_s: 0.20
+    feedback_timeout_s: 0.20
+    ack_timeout_s: 0.15
+    odom_frame: odom
+    base_frame: base_link

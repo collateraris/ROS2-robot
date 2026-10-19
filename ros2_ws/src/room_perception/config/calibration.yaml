@@ -1,0 +1,16 @@
+# Placeholder ONLY. Measure your real camera/LiDAR extrinsics before verified:true.
+# T maps a point in `laser` into `camera_optical_frame` (x right, y down, z forward).
+# This sample is NOT your real robot's calibration. Intrinsics come from CameraInfo P.
+schema_version: 1
+verified: false
+image_is_rectified: false
+camera_frame: camera_optical_frame
+lidar_frame: laser
+map_frame: map
+fixed_frame: odom
+camera_from_lidar:
+  translation_m: [0.0, -0.02, -0.085]
+  quaternion_xyzw: [0.5, -0.5, 0.5, 0.5]
+tf_tolerance:
+  translation_m: 0.02
+  rotation_rad: 0.03

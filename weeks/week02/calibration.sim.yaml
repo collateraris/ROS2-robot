@@ -1,0 +1,16 @@
+# Only for week01 generated simulator geometry, NEVER for physical hardware.
+# base->laser xyz .035,0,.12; base->camera_link .12,0,.10;
+# camera_link->camera_optical rpy -pi/2,0,-pi/2. Camera pinhole, distortion zero.
+schema_version: 1
+verified: true
+image_is_rectified: true
+camera_frame: camera_optical_frame
+lidar_frame: laser
+map_frame: map
+fixed_frame: odom
+camera_from_lidar:
+  translation_m: [0.0, -0.02, -0.085]
+  quaternion_xyzw: [0.5, -0.5, 0.5, 0.5]
+tf_tolerance:
+  translation_m: 0.002
+  rotation_rad: 0.002

@@ -1,0 +1,35 @@
+{
+  "date_utc": "2026-10-12T20:08:31.969815+00:00",
+  "release": "room_world_model_ros2_v2",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "packages": {
+    "numpy": "2.5.4",
+    "torch": "2.14.1+cpu",
+    "opencv-python-headless": "5.0.0.93",
+    "Pillow": "12.3.0",
+    "pytest": "9.1.1",
+    "PyYAML": "6.0.3",
+    "pyserial": "3.5"
+  },
+  "cuda_available": false,
+  "rclpy_available": false,
+  "default_world_model_parameters": 1960515,
+  "cxx_compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+  "runtime_exercised": [
+    "CPU PyTorch",
+    "OpenCV array processing",
+    "MCU serial event fakes",
+    "actual Arduino sketch with host API stubs and UBSan",
+    "actual ROS callbacks with message-shaped fixtures",
+    "colcon package discovery"
+  ],
+  "not_exercised": [
+    "ROS 2 Jazzy runtime or ROSIDL generation",
+    "real UVC camera",
+    "CUDA GPU",
+    "pretrained YOLO/depth weights",
+    "ATmega328P target toolchain",
+    "physical robot"
+  ]
+}

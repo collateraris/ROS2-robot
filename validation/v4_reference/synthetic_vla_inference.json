@@ -1,0 +1,9 @@
+{
+  "kind": "finite_vla_shadow",
+  "predicted_waypoint": "desk",
+  "confidence": 0.3650910556316376,
+  "proposal": "ABSTAIN",
+  "stop_proposal": false,
+  "actuation": false,
+  "calibrated": false
+}

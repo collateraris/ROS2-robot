@@ -1,0 +1,380 @@
+{
+  "model_config": {
+    "image_size": 128,
+    "latent_dim": 16,
+    "hidden_dim": 24,
+    "ensemble_size": 2,
+    "nominal_dt_s": 0.1,
+    "max_dt_s": 5.0,
+    "image_loss_weight": 1.0,
+    "latent_loss_weight": 0.25,
+    "auxiliary_loss_weight": 2.0,
+    "multistep_loss_weight": 1.0
+  },
+  "metadata": {
+    "created_utc": "2026-10-12T19:53:36.618021+00:00",
+    "research_only": true,
+    "synthetic": true,
+    "calibration_confirmed": false,
+    "provenance_complete": true,
+    "dataset_schema_version": 2,
+    "mcu_confirmation_validated": false,
+    "uncalibrated_pseudo_labels": true,
+    "labels_from_accepted_calibration": false,
+    "label_fingerprint_verified": false,
+    "action_semantics": "mcu_confirmed_piecewise_normalized_forward_yaw",
+    "control_representation": "piecewise_mcu_confirmed",
+    "depth_scale_m": 3.0,
+    "calibration_fingerprint": "synthetic",
+    "action_scale": {
+      "virtual_forward_m_s": 0.65,
+      "virtual_yaw_rad_s": 1.1
+    },
+    "held_out_validation": true,
+    "train_sessions": [
+      "synthetic-session-100",
+      "synthetic-session-101",
+      "synthetic-session-104",
+      "synthetic-session-105"
+    ],
+    "validation_sessions": [
+      "synthetic-session-103"
+    ],
+    "test_sessions": [
+      "synthetic-session-102"
+    ],
+    "split_by": "layout",
+    "split_audit": {
+      "split_by": "layout",
+      "coverage": {
+        "train": {
+          "session": [
+            "synthetic-session-100",
+            "synthetic-session-101",
+            "synthetic-session-104",
+            "synthetic-session-105"
+          ],
+          "layout": [
+            "toy-layout-100",
+            "toy-layout-101",
+            "toy-layout-104",
+            "toy-layout-105"
+          ],
+          "day": [
+            "synthetic-day-100",
+            "synthetic-day-101",
+            "synthetic-day-104",
+            "synthetic-day-105"
+          ],
+          "lighting": [
+            "synthetic-illumination-0.921",
+            "synthetic-illumination-0.985",
+            "synthetic-illumination-1.020",
+            "synthetic-illumination-1.033"
+          ]
+        },
+        "validation": {
+          "session": [
+            "synthetic-session-103"
+          ],
+          "layout": [
+            "toy-layout-103"
+          ],
+          "day": [
+            "synthetic-day-103"
+          ],
+          "lighting": [
+            "synthetic-illumination-1.035"
+          ]
+        },
+        "test": {
+          "session": [
+            "synthetic-session-102"
+          ],
+          "layout": [
+            "toy-layout-102"
+          ],
+          "day": [
+            "synthetic-day-102"
+          ],
+          "lighting": [
+            "synthetic-illumination-0.936"
+          ]
+        }
+      },
+      "overlaps": {
+        "train__validation": {
+          "session": [],
+          "layout": [],
+          "day": [],
+          "lighting": []
+        },
+        "train__test": {
+          "session": [],
+          "layout": [],
+          "day": [],
+          "lighting": []
+        },
+        "validation__test": {
+          "session": [],
+          "layout": [],
+          "day": [],
+          "lighting": []
+        }
+      },
+      "interpretation": "Session and selected split axis are held out. Overlap on another axis does not establish generalization on that axis. Test is unused during training."
+    },
+    "train_split_values": [
+      "toy-layout-100",
+      "toy-layout-101",
+      "toy-layout-104",
+      "toy-layout-105"
+    ],
+    "validation_split_values": [
+      "toy-layout-103"
+    ],
+    "test_split_values": [
+      "toy-layout-102"
+    ],
+    "train_episode_count": 4,
+    "validation_episode_count": 1,
+    "train_aux_label_counts": {
+      "person_visible": 96,
+      "person_bearing": 50,
+      "person_proximity": 50,
+      "clearance_left": 96,
+      "clearance_center": 96,
+      "clearance_right": 96
+    },
+    "episode_provenance": [
+      {
+        "name": "episode_005.npz",
+        "sha256": "58bc4ab7c42ea00967179a6f6391eaa09de9627ec2d28a1e15727766f7787861",
+        "content_sha256": "67b7efefc2915a055ce4d23e228aaa6fba5d35fea6f8e68b35c6aa14d2761d8e",
+        "split": "train",
+        "session": "synthetic-session-105",
+        "layout": "toy-layout-105",
+        "day": "synthetic-day-105"
+      },
+      {
+        "name": "episode_004.npz",
+        "sha256": "317b59c69b4211f00d3d1440e9088b9a975f9b9f4fb79c26bddd1399a805a756",
+        "content_sha256": "50c53b0a68083b946103e14b461d6fd31965858c54e22a66dcce54285468e9b2",
+        "split": "train",
+        "session": "synthetic-session-104",
+        "layout": "toy-layout-104",
+        "day": "synthetic-day-104"
+      },
+      {
+        "name": "episode_001.npz",
+        "sha256": "2aeddc0aa53a92b1744c402cf6f437ea952fd16fa9a4576f2acc3604be43c746",
+        "content_sha256": "06540abd0a7bc341aa60df45608b95f0a2a0964fb99bb03ca6859ebce12390b4",
+        "split": "train",
+        "session": "synthetic-session-101",
+        "layout": "toy-layout-101",
+        "day": "synthetic-day-101"
+      },
+      {
+        "name": "episode_000.npz",
+        "sha256": "9a51f9caca2cc2cf5d58458c1cfa733b95dee380d90b56961d8b11f2c9d66165",
+        "content_sha256": "4a966050ac93830c55459b405733dbfbea6ae91004eb7a743feb7df82b0325dc",
+        "split": "train",
+        "session": "synthetic-session-100",
+        "layout": "toy-layout-100",
+        "day": "synthetic-day-100"
+      },
+      {
+        "name": "episode_003.npz",
+        "sha256": "8750d4f9c7a0c03ecdda56be74e29a6ed81b0e9c81e8741aec2a5cdd6a688fee",
+        "content_sha256": "147b7a400176c08364bd13175a66743fc37511e081a3e2b9aa02008ce10db1f6",
+        "split": "validation",
+        "session": "synthetic-session-103",
+        "layout": "toy-layout-103",
+        "day": "synthetic-day-103"
+      },
+      {
+        "name": "episode_002.npz",
+        "sha256": "1d1d81107a00b6884e48917a9a10d1f2449cf1216fb9e3c81393003976eae106",
+        "content_sha256": "c162301953ed64f47a2c78a69eb0b4ecb931e04a2183239bc15e6eb0ea2bd86b",
+        "split": "test",
+        "session": "synthetic-session-102",
+        "layout": "toy-layout-102",
+        "day": "synthetic-day-102"
+      }
+    ],
+    "dataset_manifest_sha256": "f532e03b83b1ae7815c108ebe3d0890cd49eace0715c96ab23f25aeb02280795",
+    "live_acceptance": false,
+    "limitations": "Uncalibrated ensemble disagreement; automatic labels may be wrong; requires independent current-observation guards and supervised physical acceptance.",
+    "source_files_sha256": {
+      "__init__.py": "98afc6a45507d7a3d3f98bfde8eb466fb713ec9b7c1f91b5ceecb1f54cde22c2",
+      "acceptance.py": "a18598389cdeab179a70407fb466abfb6c01806669a6390fcc398f8819292ef1",
+      "actuator.py": "747f7dab68c349321214ea0a9b13ed77af0c1835d1bf7ccf54d82744db117ddd",
+      "baseline_controller.py": "cc7267910afdec64e85b9793a5a9bed3cd0308b9e68bfc91da3d4334ace1b8f9",
+      "calibrate.py": "497f096e6f3596c5ca76d2850c008e9a07bd923c84e63099663665f526b9d4f6",
+      "camera.py": "19316d47ffdf7f730fac6639984710108cfe381f60d2c75b524613ee5e90f9d5",
+      "camera_v4l2.py": "208d3f8938bc771ad946ee427d5d5e75450d2a20457a6f450a47d40363ffff0d",
+      "closed_loop.py": "dc2278e6dce1856cf3f0bf943db87b9289b06e779d4793a5b09b9f064b5f57de",
+      "commands.py": "da9edc3d73e67719f26240fd36b2737d81118900c7e85dfb3cc01729b835858a",
+      "commission.py": "78093191045cfda54963002b3336ff480734768adcf41ba627ce37e8ccd1784d",
+      "configuration.py": "e68c76fd007b5da2a8ced2b303a0b520a6f3a8f963081143cfcc8901091df6d7",
+      "data.py": "398ec25db29966f29f9be26b1bce5c7840f399f83c5923df9fc92e0b81f616a0",
+      "download_models.py": "a9a289e87cc820e74107b0e5acc8cb11a758b4f7507b11baab3b65ca26e94f26",
+      "engine.py": "78f4d481e81d4207329613be7a3d8ef7b25719e0305e307dacd3f0436310b492",
+      "evaluate.py": "693f8ede1e19f5a9e0c4a1796f9b32ff2499f0ec369ae583b9b8ca41295b4a79",
+      "frames.py": "e3fc0120f359c89d776e44b196f14b487314f81a888e82126a835641af05b276",
+      "goal_client.py": "e7989ad6d93cd83aa56b46fe9626ff819241c1811d8b8c6f4bb9bd5258a728e0",
+      "label.py": "748a24f0fab81509360fa9f1a4956eb581ecc4d7ffaab6dc13361ac33c6d2c15",
+      "model.py": "5f75eae0e2cfea9ea0921d0f10c247c5a64b9a3e4975be334addf2ab68cf1248",
+      "operator.py": "49f9385f7254488dc27fe13d60bfc47b4b4e941dda40c1260c74f1b193530f9d",
+      "perception.py": "07b2680f5cb7d3b514684bbd158e5ec95b15639384db68af459bfda1d5ea14ff",
+      "planner.py": "5c00dbf9779bb5892dea57c4ee25e70f14f4f3053a2e4fe1c338cca957793c33",
+      "protocol.py": "c6379b907ebecf6b1cac7b1fa7b85c64e3ad1143e2274be9ff95e98524c3ced5",
+      "record.py": "5d333f8d5660981b447bf74aaa08d25a0c692e63383bf05f0fbed1805d4cfd99",
+      "ros_interfaces.py": "4683972ee8390008dda42a5f44a5ac77e86cf07bfff6c905433820d10cf04d80",
+      "ros_pc.py": "e5c9a6abe77f4bcee327fe24ae6fa159b03d3a3ce4a7292366bac929b69dba79",
+      "ros_pi.py": "b7a3f6e91edf1a705a0d59219bf9d8aba09a8b12a543d1bc793c96f362210206",
+      "safety.py": "c4075afdb40cafa62f087571dfad35f0a1f2643792d8d6d1cf48a2bad656255f",
+      "simulate.py": "6dc6dd0477e1a41c3238b77c33fed0d5161c0479d2f3ea91fe12ffdaa650ac92",
+      "smoke.py": "22743adecb2af72b295d026baee986ad0c380ceb77667a34c356b37b168c0ac4",
+      "timebase.py": "be41dfddfc0d164a11569da79905fc0b0fd6d618e72a602f3b7034c6f2d8b882",
+      "timing_calibration.py": "d2be48ecaba9433d3dbb3de6f5b66a1a3c6c93e211507c5b375c2a5f8fd9e003",
+      "train.py": "00344a435ebdb2e98496c5bfe6c0d9707a937580e91ddf3e1a53f7de42280b5b",
+      "vision_check.py": "3c99b8b6940361a9dda0e41eab127db636f531186337ed6549c239dc724ec1fa"
+    },
+    "training_seed": 42,
+    "limited_batch_smoke": true
+  },
+  "training_config": {
+    "data": "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data",
+    "output": "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/model",
+    "epochs": 2,
+    "batch_size": 2,
+    "sequence_length": 4,
+    "burn_in": 1,
+    "stride": 2,
+    "lr": 0.0003,
+    "latent_dim": 16,
+    "hidden_dim": 24,
+    "ensemble_size": 2,
+    "nominal_dt": 0.1,
+    "max_dt": 5.0,
+    "device": "cpu",
+    "seed": 42,
+    "workers": 0,
+    "cpu_threads": 2,
+    "validation_fraction": 0.2,
+    "test_fraction": 0.2,
+    "split_by": "layout",
+    "photometric_strength": 0.08,
+    "patience": 8,
+    "grad_clip": 1.0,
+    "mixed_precision": true,
+    "image_loss_weight": 1.0,
+    "latent_loss_weight": 0.25,
+    "auxiliary_loss_weight": 2.0,
+    "multistep_loss_weight": 1.0,
+    "max_train_batches": 2,
+    "max_val_batches": 1
+  },
+  "train_windows": 40,
+  "validation_windows": 10,
+  "epochs": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 1.8436670899391174,
+        "reconstruction": 0.022061710245907307,
+        "one_step": 0.9101744592189789,
+        "open_loop": 0.9114309251308441,
+        "latent": 0.4915032833814621,
+        "future_pixels": 0.021965354681015015,
+        "auxiliary": 0.3826666474342346
+      },
+      "validation": {
+        "loss": 1.6868340969085693,
+        "windows_evaluated": 2,
+        "aux_mae": {
+          "person_visible": 0.5361616412798563,
+          "person_bearing": null,
+          "person_proximity": null,
+          "clearance_left": 0.17730788389841715,
+          "clearance_center": 0.2556768407424291,
+          "clearance_right": 0.2794387439886729
+        },
+        "aux_valid_counts": {
+          "person_visible": 6,
+          "person_bearing": 0,
+          "person_proximity": 0,
+          "clearance_left": 6,
+          "clearance_center": 6,
+          "clearance_right": 6
+        },
+        "clearance_overestimate_mae_m": {
+          "clearance_left": 0.0,
+          "clearance_center": 0.0,
+          "clearance_right": 0.1669459491968155
+        },
+        "near_obstacle_sector_count_below_0_6m": 1,
+        "false_clearance_rate_at_0_6m": 1.0,
+        "open_loop_aux_mae_by_future_frame": [
+          0.31959640979766846,
+          0.3127892315387726,
+          0.3040532171726227
+        ],
+        "action_perturbation_mean_prediction_delta": 0.0009689447081958255,
+        "interpretation": "Aux errors use masked labels; disagreement/sensitivity are not safety certificates. Overlapping windows are correlated. No physical collision rate is inferred."
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 1.8979371786117554,
+        "reconstruction": 0.021263045258820057,
+        "one_step": 0.9338335394859314,
+        "open_loop": 0.9428406059741974,
+        "latent": 0.5400912761688232,
+        "future_pixels": 0.022295049391686916,
+        "auxiliary": 0.38825784623622894
+      },
+      "validation": {
+        "loss": 1.6831183433532715,
+        "windows_evaluated": 2,
+        "aux_mae": {
+          "person_visible": 0.5346221923828125,
+          "person_bearing": null,
+          "person_proximity": null,
+          "clearance_left": 0.17630472779273987,
+          "clearance_center": 0.25430243213971454,
+          "clearance_right": 0.2789830466111501
+        },
+        "aux_valid_counts": {
+          "person_visible": 6,
+          "person_bearing": 0,
+          "person_proximity": 0,
+          "clearance_left": 6,
+          "clearance_center": 6,
+          "clearance_right": 6
+        },
+        "clearance_overestimate_mae_m": {
+          "clearance_left": 0.0,
+          "clearance_center": 0.0,
+          "clearance_right": 0.1670568436384201
+        },
+        "near_obstacle_sector_count_below_0_6m": 1,
+        "false_clearance_rate_at_0_6m": 1.0,
+        "open_loop_aux_mae_by_future_frame": [
+          0.31845009326934814,
+          0.31169891357421875,
+          0.30301031470298767
+        ],
+        "action_perturbation_mean_prediction_delta": 0.0009712626536687216,
+        "interpretation": "Aux errors use masked labels; disagreement/sensitivity are not safety certificates. Overlapping windows are correlated. No physical collision rate is inferred."
+      }
+    }
+  ],
+  "parameter_count": 546749,
+  "test_used_for_selection": false,
+  "torch_version": "2.14.1+cpu",
+  "mixed_precision": false,
+  "best_epoch": 2
+}

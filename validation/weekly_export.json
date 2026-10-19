@@ -1,0 +1,26 @@
+[
+  {
+    "week": 1,
+    "files": 345,
+    "bytes": 1002949,
+    "archive": "weekly_releases/week01.zip"
+  },
+  {
+    "week": 2,
+    "files": 371,
+    "bytes": 1042625,
+    "archive": "weekly_releases/week02.zip"
+  },
+  {
+    "week": 3,
+    "files": 389,
+    "bytes": 1081826,
+    "archive": "weekly_releases/week03.zip"
+  },
+  {
+    "week": 4,
+    "files": 421,
+    "bytes": 1165305,
+    "archive": "weekly_releases/week04.zip"
+  }
+]

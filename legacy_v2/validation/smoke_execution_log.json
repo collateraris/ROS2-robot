@@ -1,0 +1,100 @@
+[
+  {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "room_world_model.simulate",
+      "--output",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data",
+      "--episodes",
+      "6",
+      "--frames",
+      "24",
+      "--seed",
+      "100"
+    ],
+    "returncode": 0,
+    "output": "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data/episode_000.npz\n/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data/episode_001.npz\n/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data/episode_002.npz\n/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data/episode_003.npz\n/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data/episode_004.npz\n/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data/episode_005.npz\nSYNTHETIC ONLY: resulting checkpoints are blocked for live robot use.\n"
+  },
+  {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "room_world_model.train",
+      "--data",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data",
+      "--output",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/model",
+      "--device",
+      "cpu",
+      "--epochs",
+      "2",
+      "--latent-dim",
+      "16",
+      "--hidden-dim",
+      "24",
+      "--ensemble-size",
+      "2",
+      "--batch-size",
+      "2",
+      "--sequence-length",
+      "4",
+      "--burn-in",
+      "1",
+      "--max-train-batches",
+      "2",
+      "--max-val-batches",
+      "1",
+      "--split-by",
+      "layout",
+      "--cpu-threads",
+      "2"
+    ],
+    "returncode": 0,
+    "output": "{\"epoch\": 1, \"train_loss\": 1.8436670899391174, \"validation_loss\": 1.6868340969085693, \"synthetic\": true}\n{\"epoch\": 2, \"train_loss\": 1.8979371786117554, \"validation_loss\": 1.6831183433532715, \"synthetic\": true}\n"
+  },
+  {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "room_world_model.evaluate",
+      "--checkpoint",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/model/best.pt",
+      "--data",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/data",
+      "--output",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/offline_evaluation.json",
+      "--device",
+      "cpu",
+      "--batch-size",
+      "2",
+      "--max-batches",
+      "2",
+      "--cpu-threads",
+      "2"
+    ],
+    "returncode": 0,
+    "output": "{\"report\": \"/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/offline_evaluation.json\", \"windows\": 4, \"synthetic\": true, \"diagnostics\": {\"pixel_mse_improvement_vs_persistence\": -0.04202367438483634, \"relative_pixel_mse_improvement_vs_persistence\": -281.2300408523666, \"zero_minus_actual_pixel_mse\": -1.2417634330519345e-08, \"permuted_minus_actual_pixel_mse\": -1.862645149230957e-09, \"zero_actions_minus_actual_aux_mae\": -0.00010651970903080565, \"permuted_actions_minus_actual_aux_mae\": -1.966332395875181e-05, \"persistence_minus_actual_aux_mae\": -0.2798996915419897}}\n"
+  },
+  {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "room_world_model.closed_loop",
+      "--checkpoint",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/model/best.pt",
+      "--output",
+      "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/closed_loop.json",
+      "--trials",
+      "4",
+      "--steps",
+      "64",
+      "--device",
+      "cpu",
+      "--cpu-threads",
+      "2"
+    ],
+    "returncode": 0,
+    "output": "{\"seed\": 900, \"controller\": \"reactive\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n{\"seed\": 900, \"controller\": \"wm_mpc\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n{\"seed\": 901, \"controller\": \"reactive\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n{\"seed\": 901, \"controller\": \"wm_mpc\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n{\"seed\": 902, \"controller\": \"reactive\", \"success\": true, \"steps\": 46, \"collisions\": 0}\n{\"seed\": 902, \"controller\": \"wm_mpc\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n{\"seed\": 903, \"controller\": \"reactive\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n{\"seed\": 903, \"controller\": \"wm_mpc\", \"success\": false, \"steps\": 64, \"collisions\": 0}\n"
+  }
+]

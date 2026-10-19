@@ -1,0 +1,12 @@
+{
+  "width": 640, "height": 480,
+  "fx": 550.0, "fy": 550.0, "cx": 319.5, "cy": 239.5,
+  "camera_height_m": 0.30,
+  "camera_pitch_down_rad": 0.40,
+  "camera_forward_m": 0.0, "camera_left_m": 0.0,
+  "robot_radius_m": 0.18, "robot_height_m": 0.25,
+  "obstacle_margin_m": 0.08, "floor_tolerance_m": 0.02,
+  "depth_scale_factor": 1.0,
+  "depth_relative_error": 0.30, "depth_absolute_error_m": 0.20,
+  "max_range_m": 3.0, "accepted": false
+}

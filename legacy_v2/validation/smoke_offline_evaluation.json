@@ -1,0 +1,277 @@
+{
+  "checkpoint": "/workspace/scratch/e5a7b54f38ee/wm_v2_smoke_final/model/best.pt",
+  "synthetic_checkpoint": true,
+  "held_out_sessions": [
+    "synthetic-session-102"
+  ],
+  "evaluation_split": "test",
+  "held_out_axis": "layout",
+  "held_out_axis_values": [
+    "toy-layout-102"
+  ],
+  "excluded_training_episodes": 5,
+  "windows_evaluated": 4,
+  "sequence_length": 4,
+  "burn_in": 1,
+  "metrics": {
+    "actual_actions": {
+      "pixel_mse": 0.042173102498054504,
+      "pixel_mse_by_future_frame": [
+        0.04215349443256855,
+        0.04219239205121994,
+        0.04217342101037502
+      ],
+      "aux_mae": {
+        "person_visible": 0.5343941648801168,
+        "person_bearing": null,
+        "person_proximity": null,
+        "clearance_left": 0.24391313393910727,
+        "clearance_center": 0.3596069465080897,
+        "clearance_right": 0.02780721088250478
+      },
+      "valid_aux_counts": {
+        "person_visible": 12,
+        "person_bearing": 0,
+        "person_proximity": 0,
+        "clearance_left": 12,
+        "clearance_center": 12,
+        "clearance_right": 12
+      },
+      "common_mask_aux_mae": 0.29143036405245465,
+      "aux_mae_by_future_frame": [
+        0.2863076478242874,
+        0.2879890501499176,
+        0.29999440908432007
+      ],
+      "aux_valid_count_by_future_frame": [
+        16,
+        16,
+        16
+      ],
+      "person_visibility_recall": null,
+      "person_visibility_f1": 0.0,
+      "person_clipped_range_mae_m": null,
+      "clearance_overestimate_m": {
+        "p50": 0.0,
+        "p95": 0.03278727829456329,
+        "p99": 0.03931118920445442,
+        "p100": 0.04127472639083862
+      },
+      "near_obstacle_sector_count_below_0_6m": 0,
+      "false_clearance_rate_at_0_6m": null
+    },
+    "zero_actions": {
+      "pixel_mse": 0.042173090080420174,
+      "pixel_mse_by_future_frame": [
+        0.042153479531407356,
+        0.042192382737994194,
+        0.04217340797185898
+      ],
+      "aux_mae": {
+        "person_visible": 0.5339499910672506,
+        "person_bearing": null,
+        "person_proximity": null,
+        "clearance_left": 0.24394713838895163,
+        "clearance_center": 0.35945726931095123,
+        "clearance_right": 0.02794097860654195
+      },
+      "valid_aux_counts": {
+        "person_visible": 12,
+        "person_bearing": 0,
+        "person_proximity": 0,
+        "clearance_left": 12,
+        "clearance_center": 12,
+        "clearance_right": 12
+      },
+      "common_mask_aux_mae": 0.29132384434342384,
+      "aux_mae_by_future_frame": [
+        0.2862638980150223,
+        0.2878814935684204,
+        0.29982614517211914
+      ],
+      "aux_valid_count_by_future_frame": [
+        16,
+        16,
+        16
+      ],
+      "person_visibility_recall": null,
+      "person_visibility_f1": 0.0,
+      "person_clipped_range_mae_m": null,
+      "clearance_overestimate_m": {
+        "p50": 0.0,
+        "p95": 0.03384371101856232,
+        "p99": 0.04028850421309471,
+        "p100": 0.042785704135894775
+      },
+      "near_obstacle_sector_count_below_0_6m": 0,
+      "false_clearance_rate_at_0_6m": null
+    },
+    "permuted_actions": {
+      "pixel_mse": 0.042173100635409355,
+      "pixel_mse_by_future_frame": [
+        0.04215349070727825,
+        0.04219239018857479,
+        0.04217342101037502
+      ],
+      "aux_mae": {
+        "person_visible": 0.5343827605247498,
+        "person_bearing": null,
+        "person_proximity": null,
+        "clearance_left": 0.2439268579085668,
+        "clearance_center": 0.3596176455418269,
+        "clearance_right": 0.02771553893884023
+      },
+      "valid_aux_counts": {
+        "person_visible": 12,
+        "person_bearing": 0,
+        "person_proximity": 0,
+        "clearance_left": 12,
+        "clearance_center": 12,
+        "clearance_right": 12
+      },
+      "common_mask_aux_mae": 0.2914107007284959,
+      "aux_mae_by_future_frame": [
+        0.28628744184970856,
+        0.28797176480293274,
+        0.29997290670871735
+      ],
+      "aux_valid_count_by_future_frame": [
+        16,
+        16,
+        16
+      ],
+      "person_visibility_recall": null,
+      "person_visibility_f1": 0.0,
+      "person_clipped_range_mae_m": null,
+      "clearance_overestimate_m": {
+        "p50": 0.0,
+        "p95": 0.03281334042549133,
+        "p99": 0.03953155130147934,
+        "p100": 0.04280054569244385
+      },
+      "near_obstacle_sector_count_below_0_6m": 0,
+      "false_clearance_rate_at_0_6m": null
+    },
+    "persistence": {
+      "pixel_mse": 0.00014942811321816407,
+      "pixel_mse_by_future_frame": [
+        0.00012766555664711632,
+        0.0001557337527628988,
+        0.0001648850302444771
+      ],
+      "aux_mae": {
+        "person_visible": 0.0,
+        "person_bearing": null,
+        "person_proximity": null,
+        "clearance_left": 0.013158763448397318,
+        "clearance_center": 0.006989777088165283,
+        "clearance_right": 0.025974149505297344
+      },
+      "valid_aux_counts": {
+        "person_visible": 12,
+        "person_bearing": 0,
+        "person_proximity": 0,
+        "clearance_left": 12,
+        "clearance_center": 12,
+        "clearance_right": 12
+      },
+      "common_mask_aux_mae": 0.011530672510464987,
+      "aux_mae_by_future_frame": [
+        0.004645053297281265,
+        0.007404591888189316,
+        0.022542372345924377
+      ],
+      "aux_valid_count_by_future_frame": [
+        16,
+        16,
+        16
+      ],
+      "person_visibility_recall": null,
+      "person_visibility_f1": null,
+      "person_clipped_range_mae_m": null,
+      "clearance_overestimate_m": {
+        "p50": 0.020872145891189575,
+        "p95": 0.06030750274658203,
+        "p99": 0.07530368119478226,
+        "p100": 0.07989352941513062
+      },
+      "near_obstacle_sector_count_below_0_6m": 0,
+      "false_clearance_rate_at_0_6m": null
+    }
+  },
+  "actual_actions_all_future_valid_labels": {
+    "pixel_mse": 0.042173102498054504,
+    "pixel_mse_by_future_frame": [
+      0.04215349443256855,
+      0.04219239205121994,
+      0.04217342101037502
+    ],
+    "aux_mae": {
+      "person_visible": 0.5343941648801168,
+      "person_bearing": null,
+      "person_proximity": null,
+      "clearance_left": 0.24391313393910727,
+      "clearance_center": 0.3596069465080897,
+      "clearance_right": 0.02780721088250478
+    },
+    "valid_aux_counts": {
+      "person_visible": 12,
+      "person_bearing": 0,
+      "person_proximity": 0,
+      "clearance_left": 12,
+      "clearance_center": 12,
+      "clearance_right": 12
+    },
+    "common_mask_aux_mae": 0.29143036405245465,
+    "aux_mae_by_future_frame": [
+      0.2863076478242874,
+      0.2879890501499176,
+      0.29999440908432007
+    ],
+    "aux_valid_count_by_future_frame": [
+      16,
+      16,
+      16
+    ],
+    "person_visibility_recall": null,
+    "person_visibility_f1": 0.0,
+    "person_clipped_range_mae_m": null,
+    "clearance_overestimate_m": {
+      "p50": 0.0,
+      "p95": 0.03278727829456329,
+      "p99": 0.03931118920445442,
+      "p100": 0.04127472639083862
+    },
+    "near_obstacle_sector_count_below_0_6m": 0,
+    "false_clearance_rate_at_0_6m": null
+  },
+  "common_valid_label_mask": true,
+  "shuffle": {
+    "eligible_pulses": 10,
+    "changed_pulses": 10
+  },
+  "uncertainty": {
+    "clearance_valid_predictions": 36,
+    "disagreement_error_pearson": -0.042149410453023256,
+    "interpretation": "Ensemble disagreement is a heuristic; this is not a calibrated confidence bound."
+  },
+  "diagnostics": {
+    "pixel_mse_improvement_vs_persistence": -0.04202367438483634,
+    "relative_pixel_mse_improvement_vs_persistence": -281.2300408523666,
+    "zero_minus_actual_pixel_mse": -1.2417634330519345e-08,
+    "permuted_minus_actual_pixel_mse": -1.862645149230957e-09,
+    "zero_actions_minus_actual_aux_mae": -0.00010651970903080565,
+    "permuted_actions_minus_actual_aux_mae": -1.966332395875181e-05,
+    "persistence_minus_actual_aux_mae": -0.2798996915419897
+  },
+  "interpretation": [
+    "Positive improvements favour the actual-action model; negative values are failures on that metric.",
+    "A static camera can make persistence very strong; low pixel error alone does not imply useful control.",
+    "All primary aux comparisons use the same anchor-and-future valid mask; full-future actual-action errors are separate.",
+    "Permuted actions shuffle nonzero pulse controls only: idle segments, durations and padding are unchanged.",
+    "Test excludes validation used in checkpoint selection; --split validation is monitoring, not a final test.",
+    "Clearance errors are relative to supplied labels, which may themselves be biased pseudo-labels.",
+    "Overlapping windows are correlated; no statistical collision guarantee is inferred.",
+    "Physical success rate, emergency-stop count and completion time require separate supervised trials."
+  ]
+}

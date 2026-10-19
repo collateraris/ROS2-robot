@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "groups": [
+    {
+      "source": "synthetic_fixture",
+      "split": "dev",
+      "method": "llm",
+      "episodes": 1,
+      "complete_episodes": 1,
+      "successes": 0,
+      "success_rate_complete_only": 0.0,
+      "aborted": 0,
+      "incomplete": 0
+    },
+    {
+      "source": "synthetic_fixture",
+      "split": "dev",
+      "method": "oracle_goal",
+      "episodes": 1,
+      "complete_episodes": 1,
+      "successes": 1,
+      "success_rate_complete_only": 1.0,
+      "aborted": 0,
+      "incomplete": 0
+    },
+    {
+      "source": "synthetic_fixture",
+      "split": "dev",
+      "method": "rules",
+      "episodes": 1,
+      "complete_episodes": 1,
+      "successes": 1,
+      "success_rate_complete_only": 1.0,
+      "aborted": 0,
+      "incomplete": 0
+    }
+  ],
+  "limitations": [
+    "LiDAR clearance is minimum finite ray minus configured robot enclosing radius; approximate, no contact proof.",
+    "oracle_goal bypasses semantics and uses evaluator target: navigation upper-bound diagnostic, not fair end-to-end semantic competitor.",
+    "Compare rules/llm only with identical scene/task/perception/config; simulator assets are primitive geometry proxies.",
+    "synthetic_fixture rows are fabricated smoke fixtures, never simulator or real detection performance."
+  ]
+}

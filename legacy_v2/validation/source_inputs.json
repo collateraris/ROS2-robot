@@ -1,0 +1,8 @@
+{
+  "base_archive": "room_world_model_ros2_v1.zip",
+  "base_archive_sha256": "09d623bae6649c81ad6bc0061a0ca58b06067f059dda4eff595da7b33e766806",
+  "deep_research_title": "Система автономности ROS 2 с камерой, текстовыми командами и learned world model для работы в одной комнате",
+  "extracted_report_markdown_sha256": "9e45de3663bddea22baafba28b12237278726fc1f2d372d55956a6604d38a3f1",
+  "mapping": "docs/MIGRATION_V2_RU.md",
+  "version": "0.2.0"
+}

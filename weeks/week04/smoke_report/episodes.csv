@@ -1,0 +1,4 @@
+episode_id,scene_id,split,task_id,method,source,outcome,reason,success,physical_goal_reached,position_or_standoff_error_m,heading_error_rad,path_length_gt_m,elapsed_sim_s,elapsed_wall_s,collision_pairs,contact_samples,min_lidar_clearance_approx_m,interventions,task_result
+fixture_rules,dev_000,dev,approach_person,rules,synthetic_fixture,success,ground_truth_verified,True,True,2.220446049250313e-16,1.1102230246251565e-16,1.0,4.0,4.0,0,21,0.42,0,succeeded
+fixture_llm,dev_000,dev,approach_person,llm,synthetic_fixture,failed,ground_truth_goal_not_reached,False,False,0.4164531222832526,0.9270052512846942,0.9999999999999998,4.0,4.0,0,21,0.42,0,succeeded
+fixture_oracle_goal,dev_000,dev,approach_person,oracle_goal,synthetic_fixture,success,ground_truth_verified,True,True,2.220446049250313e-16,1.1102230246251565e-16,1.0,4.0,4.0,0,21,0.42,0,succeeded

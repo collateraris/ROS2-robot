@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /workspace/scratch/474a584849cf/room_world_model_ros2_v4_rf2o
+configfile: pyproject.toml
+collected 68 items
+
+tests/test_extras.py ....                                                [  5%]
+tests/test_pwm_calibrate.py .....                                        [ 13%]
+learning_nav/tests/test_data.py .............                            [ 32%]
+learning_nav/tests/test_models.py ...                                    [ 36%]
+learning_nav/tests/test_recording.py ....                                [ 42%]
+ros2_ws/src/room_nav/test/test_bringup.py ....                           [ 48%]
+ros2_ws/src/room_nav/test/test_core.py ....                              [ 54%]
+ros2_ws/src/room_base/test/test_core.py .....                            [ 61%]
+ros2_ws/src/room_base/test/test_encoderless_bridge.py ....               [ 67%]
+ros2_ws/src/room_base/test/test_encoderless_core.py ...........          [ 83%]
+ros2_ws/src/room_base/test/test_odom_guard.py ...........                [100%]
+
+============================== 68 passed in 2.49s ==============================
+encoderless firmware CRC/session/PWM/watchdog tests passed; physical timing NOT emulated
+RF2O math host checks passed: stationary room, translation, empty/rank-deficient rejection

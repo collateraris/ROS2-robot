@@ -1,0 +1,79 @@
+{
+  "synthetic": true,
+  "split_sessions": {
+    "test": [
+      "SYNTHETIC_001"
+    ],
+    "val": [
+      "SYNTHETIC_000"
+    ],
+    "train": [
+      "SYNTHETIC_002",
+      "SYNTHETIC_003",
+      "SYNTHETIC_004",
+      "SYNTHETIC_005"
+    ]
+  },
+  "training_class_counts": [
+    16,
+    16,
+    16
+  ],
+  "validation": {
+    "rows": 12,
+    "accuracy": 0.5833333333333334,
+    "balanced_accuracy_observed_classes": 0.5833333333333334,
+    "majority_class_baseline_accuracy": 0.3333333333333333,
+    "confusion_true_rows_pred_columns": [
+      [
+        1,
+        0,
+        3
+      ],
+      [
+        0,
+        2,
+        2
+      ],
+      [
+        0,
+        0,
+        4
+      ]
+    ],
+    "class_names": [
+      "STOP",
+      "desk",
+      "home"
+    ]
+  },
+  "test": {
+    "rows": 12,
+    "accuracy": 0.6666666666666666,
+    "balanced_accuracy_observed_classes": 0.6666666666666666,
+    "majority_class_baseline_accuracy": 0.3333333333333333,
+    "confusion_true_rows_pred_columns": [
+      [
+        0,
+        1,
+        3
+      ],
+      [
+        0,
+        4,
+        0
+      ],
+      [
+        0,
+        0,
+        4
+      ]
+    ],
+    "class_names": [
+      "STOP",
+      "desk",
+      "home"
+    ]
+  },
+  "note": "Finite known waypoint vocabulary; softmax confidence is not calibrated."
+}

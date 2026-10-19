@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rf2o_laser_odometry</name>
+  <version>0.1.0</version>
+  <description>RF2O range-flow laser odometry, upstream ros2 source with room-robot robustness patch.</description>
+  <maintainer email="jgmonroy@uma.es">Javier G. Monroy</maintainer>
+  <author email="marianojt@uma.es">Mariano Jaimez</author>
+  <author email="jgmonroy@uma.es">Javier G. Monroy</author>
+  <license>GPL-3.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>eigen3_cmake_module</build_depend>
+  <depend>rclcpp</depend><depend>std_msgs</depend><depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend><depend>sensor_msgs</depend><depend>tf2</depend>
+  <depend>tf2_ros</depend><depend>tf2_geometry_msgs</depend>
+  <depend>eigen</depend><depend>boost</depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

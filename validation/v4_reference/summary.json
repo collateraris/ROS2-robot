@@ -1,0 +1,11 @@
+{
+  "project": "room_world_model_ros2_v4_rf2o",
+  "date": "2026-10-14",
+  "python": "3.12.14",
+  "pytest_passed": 68,
+  "rf2o_math_host": "passed (real algorithm; ROS stubs; Eigen 3.4)",
+  "encoderless_firmware_host": "passed (Arduino/EEPROM stubs)",
+  "ml_cpu_synthetic_train_infer": "passed; schema_v2; 6x12 transitions; 2 world members; 1 epoch each",
+  "ros_runtime_colcon": "not_available_not_tested",
+  "hardware": "not_available_not_tested"
+}

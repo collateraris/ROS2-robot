@@ -1,0 +1,24 @@
+# Header is an estimate in ROS/system time for tools; all safety uses the Pi interval.
+std_msgs/Header header
+uint16 schema_version
+roomwm_msgs/FrameRef frame
+uint64 pi_dequeue_monotonic_ns
+uint64 exposure_earliest_ns
+uint64 exposure_latest_ns
+uint64 publish_monotonic_ns
+bool has_v4l2_metadata
+uint64 v4l2_timestamp_ns
+uint32 v4l2_sequence
+uint32 v4l2_flags
+bool timing_valid
+string<=24 timestamp_source
+string<=24 timestamp_clock
+string<=256 timing_evidence_id
+string<=256 timing_reason
+float64 exposure_estimate_s
+float64 exposure_uncertainty_s
+float64 capture_latency_bound_s
+float64 age_upper_at_publish_s
+string<=64 calibration_fingerprint
+bool settled
+string<=16 mode

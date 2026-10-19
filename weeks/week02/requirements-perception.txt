@@ -1,0 +1,8 @@
+# Use .venv with --system-site-packages to retain ROS rclpy.
+# Install torch/torchvision matching your CUDA from the official PyTorch index.
+torch>=2.4,<3
+torchvision>=0.19,<1
+transformers==4.52.3
+Pillow>=10,<12
+numpy>=1.24,<3
+PyYAML>=6,<7
