@@ -1,5 +1,7 @@
 # Неделя 1: Gazebo → LiDAR → RF2O → SLAM → Nav2
 
+Для ПК с установленной Ubuntu начни с [подробной первой недели на Ubuntu-ПК](WEEK01_UBUNTU_RU.md).
+
 Для ПК с Windows и Raspberry Pi смотри [пошаговый маршрут WSL2 + отдельная проверка C1](WEEK01_WINDOWS_RU.md). Этот файл описывает общую Linux-часть.
 
 Цель недели — воспроизводимый проезд между двумя точками в симуляции и понимание каждого источника координат. Реальный робот остаётся без энкодеров. Симуляция повторяет его сенсорную схему, но её идеальная механика и задержки ещё не являются измерениями настоящего шасси.
@@ -96,7 +98,8 @@ ros2 service call /room_base/stop std_srvs/srv/Trigger '{}'
 
 ```bash
 mkdir -p data/maps
-ros2 run nav2_map_server map_saver_cli -f "$PWD/data/maps/room"
+ros2 run nav2_map_server map_saver_cli -f "$PWD/data/maps/room" \
+  --ros-args -p use_sim_time:=true
 ```
 
 Следующий запуск с картой:

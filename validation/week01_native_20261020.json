@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-20",
+  "scope": "Documentation-only native Ubuntu week-one guide; no changes to executable ROS code.",
+  "checks": {
+    "README.md": {
+      "bash_blocks_syntax_checked": 2,
+      "local_links": "pass"
+    },
+    "docs/WEEK01_RU.md": {
+      "bash_blocks_syntax_checked": 9,
+      "local_links": "pass"
+    },
+    "docs/WEEK01_UBUNTU_RU.md": {
+      "bash_blocks_syntax_checked": 32,
+      "local_links": "pass"
+    }
+  },
+  "weekly_archives": [
+    {
+      "week": 1,
+      "files": 346,
+      "bytes": 1017146,
+      "archive": "weekly_releases/week01.zip",
+      "native_guide_included": true,
+      "current_documentation_links_checked": 12
+    },
+    {
+      "week": 2,
+      "files": 372,
+      "bytes": 1056819,
+      "archive": "weekly_releases/week02.zip",
+      "native_guide_included": true,
+      "current_documentation_links_checked": 16
+    },
+    {
+      "week": 3,
+      "files": 390,
+      "bytes": 1096022,
+      "archive": "weekly_releases/week03.zip",
+      "native_guide_included": true,
+      "current_documentation_links_checked": 18
+    },
+    {
+      "week": 4,
+      "files": 422,
+      "bytes": 1179499,
+      "archive": "weekly_releases/week04.zip",
+      "native_guide_included": true,
+      "current_documentation_links_checked": 20
+    }
+  ],
+  "link_scope": "Current documentation; archived legacy_v2 historical reports excluded.",
+  "runtime": "ROS/colcon/Gazebo and physical hardware not executed in this preparation environment; previous offline test reports remain dated separately."
+}
