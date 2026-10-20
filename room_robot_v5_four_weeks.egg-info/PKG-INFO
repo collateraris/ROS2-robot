@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: room-robot-v5-four-weeks
+Version: 0.5.0
+Summary: Four-week RF2O/Nav2 mobile robot project with semantic perception, local planning and evaluation
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: numpy<3,>=1.24
+Requires-Dist: PyYAML>=6
+Requires-Dist: Pillow>=10
+Provides-Extra: ml
+Requires-Dist: torch<3,>=2.4; extra == "ml"
+Provides-Extra: test
+Requires-Dist: pytest<10,>=8; extra == "test"
+Provides-Extra: perception
+Requires-Dist: torch<3,>=2.6; extra == "perception"
+Requires-Dist: transformers==4.52.3; extra == "perception"
+Requires-Dist: safetensors>=0.4.3; extra == "perception"
+Provides-Extra: eval
+Requires-Dist: matplotlib<4,>=3.8; extra == "eval"
+Dynamic: license-file

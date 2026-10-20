@@ -3,7 +3,6 @@
   <name>room_tasks</name><version>5.0.0</version>
   <description>Strict symbolic local-model planner and Nav2 task coordinator.</description>
   <maintainer email="robot@example.invalid">Room robot project</maintainer><license>MIT</license>
-  <buildtool_depend>ament_python</buildtool_depend>
   <exec_depend>rclpy</exec_depend><exec_depend>launch</exec_depend><exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend><exec_depend>std_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend><exec_depend>geometry_msgs</exec_depend>

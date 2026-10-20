@@ -3,7 +3,6 @@
   <name>room_sim</name><version>5.0.0</version>
   <description>Gazebo Harmonic room, encoderless RF2O navigation and a simulation-only drive gate.</description>
   <maintainer email="robot@example.invalid">Room robot project</maintainer><license>Apache-2.0</license>
-  <buildtool_depend>ament_python</buildtool_depend>
   <exec_depend>rclpy</exec_depend><exec_depend>launch</exec_depend><exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend><exec_depend>python3-yaml</exec_depend>
   <exec_depend>ros_gz_sim</exec_depend><exec_depend>ros_gz_bridge</exec_depend><exec_depend>ros_gz_interfaces</exec_depend>
